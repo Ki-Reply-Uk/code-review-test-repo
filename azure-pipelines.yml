@@ -46,7 +46,7 @@ steps:
 
 - script: |
     docker build -t my-sonar-scanner "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner"
-    docker run --network sonarnet --rm -v "$(Build.SourcesDirectory):/usr/src" my-sonar-scanner
+    docker run --network sonarqube-project_sonarnet --rm -v "$(Build.SourcesDirectory):/usr/src" my-sonar-scanner
   displayName: 'Run SonarScanner'
 
 - script: |
