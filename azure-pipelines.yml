@@ -22,19 +22,17 @@ steps:
 - checkout: sonarqube-issue-fixer  # Checkout the Azure DevOps repository containing Docker files and scripts
 
 - script: |
-    echo "Listing files in the main directory:"
-    ls -al "$(Build.SourcesDirectory)"  # List the files in the main directory for debugging
-
-    echo "Listing files in the 'SonarQube Issue Fixer' directory:"
-    ls -al "$(Build.SourcesDirectory)/SonarQube Issue Fixer"  # List the files in the 'SonarQube Issue Fixer' directory for debugging
-
-    echo "Listing files in the 'sonarqube-project' directory:"
-    ls -al "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project"  # List the files in the 'sonarqube-project' directory for debugging
-  displayName: 'List files in source and sonarqube-project directory'
-
-- script: |
     docker-compose -f "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/docker-compose.yml" up -d
   displayName: 'Start SonarQube and PostgreSQL'
+
+- script: |
+    echo "Waiting for SonarQube to be available..."
+    while ! curl -s -f -o /dev/null "$(SONARQUBE_URL)"; do
+      echo "SonarQube is unavailable - waiting"
+      sleep 5
+    done
+    echo "SonarQube is up and running"
+  displayName: 'Wait for SonarQube to be available'
 
 - script: |
     echo "sonar.host.url=$(SONARQUBE_URL)" > "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
