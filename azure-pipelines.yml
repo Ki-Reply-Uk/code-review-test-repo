@@ -6,19 +6,19 @@ pool:
 
 variables:
   SONARQUBE_URL: 'http://localhost:9000'
-  SONARQUBE_PROJECT_KEY: 'My-Project'  # Updated with the actual SonarQube project key
+  SONARQUBE_PROJECT_KEY: 'My-Project'
+  # Ensure SONARQUBE_TOKEN is defined as a secret variable in Azure DevOps pipeline settings
 
 resources:
   repositories:
-    - repository: self  # This checks out the GitHub repository where the azure-pipelines.yml file resides
+    - repository: self
     - repository: sonarqube-issue-fixer
       type: git
-      name: "SonarQube Issue Fixer/SonarQube Issue Fixer"  # Replace with actual values, quoted to handle spaces
+      name: "SonarQube Issue Fixer/SonarQube Issue Fixer"
 
 steps:
-- checkout: self  # Checkout the GitHub repository
-
-- checkout: sonarqube-issue-fixer  # Checkout the Azure DevOps repository containing Docker files and scripts
+- checkout: self
+- checkout: sonarqube-issue-fixer
 
 - script: |
     docker-compose -f "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/docker-compose.yml" up -d
@@ -26,7 +26,7 @@ steps:
 
 - script: |
     echo "Giving SonarQube time to initialize..."
-    sleep 60  # Wait for 60 seconds to give SonarQube time to initialize
+    sleep 60
   displayName: 'Wait for SonarQube to initialize'
 
 - script: |
@@ -43,11 +43,14 @@ steps:
   displayName: 'Wait for SonarQube to be available'
 
 - script: |
+    echo "Configuring SonarScanner properties..."
     echo "sonar.host.url=$(SONARQUBE_URL)" > "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
-    echo "sonar.login=$(SONARQUBE_TOKEN)" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+    echo "sonar.login=$SONARQUBE_TOKEN" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
     echo "sonar.projectKey=$(SONARQUBE_PROJECT_KEY)" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
     echo "sonar.sources=." >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
     echo "sonar.projectName=MyProject" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+    echo "SonarScanner properties configured successfully:"
+    cat "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
   displayName: 'Configure SonarScanner Properties'
 
 - script: |
