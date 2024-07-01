@@ -5,7 +5,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  SONARQUBE_URL: 'http://sonarqube:9000'
+  SONARQUBE_URL: 'http://localhost:9000'
   SONARQUBE_PROJECT_KEY: 'My-Project'
   # Ensure SONARQUBE_TOKEN is defined as a secret variable in Azure DevOps pipeline settings
 
