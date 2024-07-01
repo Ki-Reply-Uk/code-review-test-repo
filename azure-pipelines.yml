@@ -32,12 +32,13 @@ steps:
 - script: |
     echo "Waiting for SonarQube to be available..."
     for i in {1..24}; do
-      if curl -s -f -o /dev/null "$(SONARQUBE_URL)/api/system/health"; then
-        health=$(curl -s "$(SONARQUBE_URL)/api/system/health" | jq -r .status)
-        if [ "$health" = "GREEN" ]; then
-          echo "SonarQube is up and running"
-          break
-        fi
+      health_response=$(curl -s -f "$(SONARQUBE_URL)/api/system/health")
+      health=$(echo "$health_response" | grep -o '"status":"[^"]*"' | grep -o '[^"]*$')
+      echo "Health response: $health_response"
+      echo "Parsed health status: $health"
+      if [ "$health" = "GREEN" ]; then
+        echo "SonarQube is up and running"
+        break
       fi
       echo "SonarQube is unavailable or not fully initialized - waiting"
       docker logs sonarqube | tail -n 20
