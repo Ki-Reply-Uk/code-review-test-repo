@@ -5,8 +5,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  SONARQUBE_URL: 'http://sonarqube:9000'
-  SONARQUBE_PROJECT_KEY: 'My-Project'  # Replace with your actual SonarQube project key
+  SONARQUBE_URL: 'http://localhost:9000'
+  SONARQUBE_PROJECT_KEY: 'My-Project'  # Updated with the actual SonarQube project key
   SONARQUBE_TOKEN: '$(SONARQUBE_TOKEN)'  # This should be stored as a secret variable in Azure DevOps
 
 resources:
@@ -27,11 +27,15 @@ steps:
 
 - script: |
     echo "Waiting for SonarQube to be available..."
-    while ! curl -s -f -o /dev/null "$(SONARQUBE_URL)"; do
+    for i in {1..24}; do
+      if curl -s -f -o /dev/null "$(SONARQUBE_URL)"; then
+        echo "SonarQube is up and running"
+        break
+      fi
       echo "SonarQube is unavailable - waiting"
-      sleep 5
+      docker logs sonarqube | tail -n 20
+      sleep 10
     done
-    echo "SonarQube is up and running"
   displayName: 'Wait for SonarQube to be available'
 
 - script: |
