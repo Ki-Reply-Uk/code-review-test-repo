@@ -14,7 +14,7 @@ resources:
     - repository: self  # This checks out the GitHub repository where the azure-pipelines.yml file resides
     - repository: sonarqube-issue-fixer
       type: git
-      name: SonarQube Issue Fixer/SonarQube Issue Fixer  # Replace with your Azure DevOps organization/project/repository name
+      name: kireplyuk/SonarQube Issue Fixer/SonarQube Issue Fixer  # Replace with your Azure DevOps organization/project/repository name
 
 steps:
 - checkout: self  # Checkout the GitHub repository
@@ -22,7 +22,13 @@ steps:
 - checkout: sonarqube-issue-fixer  # Checkout the Azure DevOps repository containing Docker files and scripts
 
 - script: |
+    echo "Listing files in the main directory:"
     ls -al $(Build.SourcesDirectory)  # List the files in the main directory for debugging
+
+    echo "Listing files in the sonarqube-issue-fixer directory:"
+    ls -al $(Build.SourcesDirectory)/sonarqube-issue-fixer  # List the files in the sonarqube-issue-fixer directory for debugging
+
+    echo "Listing files in the sonarqube-project directory:"
     ls -al $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project  # List the files in the sonarqube-project directory for debugging
   displayName: 'List files in source and sonarqube-project directory'
 
