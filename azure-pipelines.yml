@@ -4,59 +4,32 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-resources:
-  repositories:
-    - repository: self  # This will reference the pipeline-scripts repository itself
-
 variables:
+  - group: SonarQubeSecrets  # This will include SONARQUBE_TOKEN and other secrets
+
   SONARQUBE_URL: 'http://localhost:9000'
-  SONARQUBE_PROJECT_KEY: 'My-Project'
+  SONARQUBE_PROJECT_KEY: 'My-Project'  # Replace with your actual SonarQube project key
 
 steps:
-- task: JavaToolInstaller@0
-  inputs:
-    versionSpec: '11'
-    jdkArchitectureOption: 'x64'
-  displayName: 'Set up Java JDK 11'
-
-- checkout: self
+- checkout: self  # This checks out the GitHub repository where the azure-pipelines.yml file resides
 
 - script: |
-    docker-compose -f $(Build.SourcesDirectory)/pipeline-scripts/docker-compose.yml up -d
+    docker-compose -f $(Build.SourcesDirectory)/sonarqube-project/docker-compose.yml up -d
   displayName: 'Start SonarQube and PostgreSQL'
 
 - script: |
-    docker build -t my-sonar-scanner $(Build.SourcesDirectory)/pipeline-scripts/sonar-scanner
-    docker run --network sonarnet --rm -v $(Build.SourcesDirectory)/code:/usr/src my-sonar-scanner
+    echo "sonar.host.url=$(SONARQUBE_URL)" > $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner/sonar-scanner.properties
+    echo "sonar.login=$(SONARQUBE_TOKEN)" >> $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner/sonar-scanner.properties
+    echo "sonar.projectKey=$(SONARQUBE_PROJECT_KEY)" >> $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner/sonar-scanner.properties
+    echo "sonar.sources=." >> $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner/sonar-scanner.properties
+    echo "sonar.projectName=MyProject" >> $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner/sonar-scanner.properties
+  displayName: 'Configure SonarScanner Properties'
+
+- script: |
+    docker build -t my-sonar-scanner $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner
+    docker run --network sonarnet --rm -v $(Build.SourcesDirectory):/usr/src my-sonar-scanner
   displayName: 'Run SonarScanner'
 
 - script: |
-    pip install requests
-    python $(Build.SourcesDirectory)/pipeline-scripts/scripts/fetch_sonar_issues.py --output $(Build.SourcesDirectory)/sonar-issues.json
-  displayName: 'Fetch SonarQube Issues'
-  env:
-    SONARQUBE_URL: $(SONARQUBE_URL)
-    SONARQUBE_PROJECT_KEY: $(SONARQUBE_PROJECT_KEY)
-    SONARQUBE_TOKEN: $(SONARQUBE_TOKEN)
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)/sonar-issues.json'
-    ArtifactName: 'sonar-issues'
-  displayName: 'Publish SonarQube Issues as Artifact'
-
-# - script: |
-#     pip install your-llm-library
-#     python $(Build.SourcesDirectory)/pipeline-scripts/scripts/process_issues_with_llm.py --input $(Build.SourcesDirectory)/sonar-issues.json
-#   displayName: 'Process Issues with LLM'
-
-# - script: |
-#     pip install PyGithub
-#     python $(Build.SourcesDirectory)/pipeline-scripts/scripts/create_pull_requests.py --input $(Build.SourcesDirectory)/proposed-fixes.json
-#   displayName: 'Create Pull Requests'
-#   env:
-#     GITHUB_TOKEN: $(GITHUB_TOKEN)
-
-- script: |
-    docker-compose -f $(Build.SourcesDirectory)/pipeline-scripts/docker-compose.yml down
+    docker-compose -f $(Build.SourcesDirectory)/sonarqube-project/docker-compose.yml down
   displayName: 'Stop SonarQube and PostgreSQL'
