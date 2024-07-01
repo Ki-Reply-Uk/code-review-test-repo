@@ -14,7 +14,7 @@ resources:
     - repository: self  # This checks out the GitHub repository where the azure-pipelines.yml file resides
     - repository: sonarqube-issue-fixer
       type: git
-      name: "SonarQube Issue Fixer/SonarQube Issue Fixer"  # Replace with your Azure DevOps organization/project/repository name
+      name: "SonarQube Issue Fixer/SonarQube Issue Fixer"  # Replace with actual values, quoted to handle spaces
 
 steps:
 - checkout: self  # Checkout the GitHub repository
@@ -23,32 +23,32 @@ steps:
 
 - script: |
     echo "Listing files in the main directory:"
-    ls -al $(Build.SourcesDirectory)  # List the files in the main directory for debugging
+    ls -al "$(Build.SourcesDirectory)"  # List the files in the main directory for debugging
 
-    echo "Listing files in the sonarqube-issue-fixer directory:"
-    ls -al $(Build.SourcesDirectory)/sonarqube-issue-fixer  # List the files in the sonarqube-issue-fixer directory for debugging
+    echo "Listing files in the 'SonarQube Issue Fixer' directory:"
+    ls -al "$(Build.SourcesDirectory)/SonarQube Issue Fixer"  # List the files in the 'SonarQube Issue Fixer' directory for debugging
 
-    echo "Listing files in the sonarqube-project directory:"
-    ls -al $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project  # List the files in the sonarqube-project directory for debugging
+    echo "Listing files in the 'sonarqube-project' directory:"
+    ls -al "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project"  # List the files in the 'sonarqube-project' directory for debugging
   displayName: 'List files in source and sonarqube-project directory'
 
 - script: |
-    docker-compose -f $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/docker-compose.yml up -d
+    docker-compose -f "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/docker-compose.yml" up -d
   displayName: 'Start SonarQube and PostgreSQL'
 
 - script: |
-    echo "sonar.host.url=$(SONARQUBE_URL)" > $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties
-    echo "sonar.login=$(SONARQUBE_TOKEN)" >> $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties
-    echo "sonar.projectKey=$(SONARQUBE_PROJECT_KEY)" >> $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties
-    echo "sonar.sources=." >> $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties
-    echo "sonar.projectName=MyProject" >> $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties
+    echo "sonar.host.url=$(SONARQUBE_URL)" > "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+    echo "sonar.login=$(SONARQUBE_TOKEN)" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+    echo "sonar.projectKey=$(SONARQUBE_PROJECT_KEY)" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+    echo "sonar.sources=." >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+    echo "sonar.projectName=MyProject" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
   displayName: 'Configure SonarScanner Properties'
 
 - script: |
-    docker build -t my-sonar-scanner $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner
-    docker run --network sonarnet --rm -v $(Build.SourcesDirectory):/usr/src my-sonar-scanner
+    docker build -t my-sonar-scanner "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner"
+    docker run --network sonarnet --rm -v "$(Build.SourcesDirectory):/usr/src" my-sonar-scanner
   displayName: 'Run SonarScanner'
 
 - script: |
-    docker-compose -f $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/docker-compose.yml down
+    docker-compose -f "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/docker-compose.yml" down
   displayName: 'Stop SonarQube and PostgreSQL'
