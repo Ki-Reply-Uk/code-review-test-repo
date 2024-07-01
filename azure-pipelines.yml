@@ -5,7 +5,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  SONARQUBE_URL: 'http://localhost:9000'
+  SONARQUBE_URL: 'http://sonarqube:9000'
   SONARQUBE_PROJECT_KEY: 'My-Project'
   # Ensure SONARQUBE_TOKEN is defined as a secret variable in Azure DevOps pipeline settings
 
@@ -32,7 +32,7 @@ steps:
 - script: |
     echo "Waiting for SonarQube to be available..."
     for i in {1..24}; do
-      if curl -s -f -o /dev/null "$(SONARQUBE_URL)"; then
+      if curl -s -f -o /dev/null "http://sonarqube:9000"; then
         echo "SonarQube is up and running"
         break
       fi
@@ -44,7 +44,7 @@ steps:
 
 - script: |
     echo "Configuring SonarScanner properties..."
-    echo "sonar.host.url=$(SONARQUBE_URL)" > "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+    echo "sonar.host.url=http://sonarqube:9000" > "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
     echo "sonar.login=$SONARQUBE_TOKEN" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
     echo "sonar.projectKey=$(SONARQUBE_PROJECT_KEY)" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
     echo "sonar.sources=." >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
