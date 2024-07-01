@@ -25,11 +25,6 @@ steps:
   displayName: 'Start SonarQube and PostgreSQL'
 
 - script: |
-    echo "Giving SonarQube time to initialize..."
-    sleep 60
-  displayName: 'Wait for SonarQube to initialize'
-
-- script: |
     echo "Waiting for SonarQube to be available..."
     for i in {1..24}; do
       if curl -s -f -o /dev/null "http://sonarqube:9000"; then
