@@ -26,25 +26,25 @@ steps:
 
 - script: |
     echo "Giving SonarQube time to initialize..."
-    sleep 60
+    sleep 120
   displayName: 'Wait for SonarQube to initialize'
 
-- script: |
-    echo "Waiting for SonarQube to be available..."
-    for i in {1..24}; do
-      health_response=$(curl -s -f "$(SONARQUBE_URL)/api/system/health")
-      health=$(echo "$health_response" | grep -o '"status":"[^"]*"' | grep -o '[^"]*$')
-      echo "Health response: $health_response"
-      echo "Parsed health status: $health"
-      if [ "$health" = "GREEN" ]; then
-        echo "SonarQube is up and running"
-        break
-      fi
-      echo "SonarQube is unavailable or not fully initialized - waiting"
-      docker logs sonarqube | tail -n 20
-      sleep 10
-    done
-  displayName: 'Wait for SonarQube to be available'
+# - script: |
+#     echo "Waiting for SonarQube to be available..."
+#     for i in {1..24}; do
+#       health_response=$(curl -s -f "$(SONARQUBE_URL)/api/system/health")
+#       health=$(echo "$health_response" | grep -o '"status":"[^"]*"' | grep -o '[^"]*$')
+#       echo "Health response: $health_response"
+#       echo "Parsed health status: $health"
+#       if [ "$health" = "GREEN" ]; then
+#         echo "SonarQube is up and running"
+#         break
+#       fi
+#       echo "SonarQube is unavailable or not fully initialized - waiting"
+#       docker logs sonarqube | tail -n 20
+#       sleep 10
+#     done
+#   displayName: 'Wait for SonarQube to be available'
 
 - script: |
     echo "Configuring SonarScanner properties..."
