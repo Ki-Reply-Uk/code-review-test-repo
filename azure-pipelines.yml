@@ -5,7 +5,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  - group: SonarQubeSecrets  # This will include SONARQUBE_TOKEN and other secrets
   SONARQUBE_URL: 'http://localhost:9000'
   SONARQUBE_PROJECT_KEY: 'My-Project'  # Replace with your actual SonarQube project key
 
