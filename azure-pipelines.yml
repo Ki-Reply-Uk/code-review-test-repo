@@ -46,21 +46,21 @@ steps:
 #     done
 #   displayName: 'Wait for SonarQube to be available'
 
-- script: |
-    echo "Configuring SonarScanner properties..."
-    echo "sonar.host.url=$(SONARQUBE_URL)" > "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
-    echo "sonar.login=$SONARQUBE_TOKEN" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
-    echo "sonar.projectKey=$(SONARQUBE_PROJECT_KEY)" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
-    echo "sonar.sources=." >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
-    echo "sonar.projectName=MyProject" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
-    echo "SonarScanner properties configured successfully:"
-    cat "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
-  displayName: 'Configure SonarScanner Properties'
+# - script: |
+#     echo "Configuring SonarScanner properties..."
+#     echo "sonar.host.url=$(SONARQUBE_URL)" > "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+#     echo "sonar.login=$SONARQUBE_TOKEN" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+#     echo "sonar.projectKey=$(SONARQUBE_PROJECT_KEY)" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+#     echo "sonar.sources=." >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+#     echo "sonar.projectName=MyProject" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+#     echo "SonarScanner properties configured successfully:"
+#     cat "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+#   displayName: 'Configure SonarScanner Properties'
 
-- script: |
-    docker build -t my-sonar-scanner "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner"
-    docker run --network sonarqube-project_sonarnet --rm -v "$(Build.SourcesDirectory):/usr/src" my-sonar-scanner -X
-  displayName: 'Run SonarScanner'
+# - script: |
+#     docker build -t my-sonar-scanner "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner"
+#     docker run --network sonarqube-project_sonarnet --rm -v "$(Build.SourcesDirectory):/usr/src" my-sonar-scanner -X
+#   displayName: 'Run SonarScanner'
 
 - script: |
     docker-compose -f "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/docker-compose.yml" down
