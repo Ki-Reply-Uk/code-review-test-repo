@@ -7,27 +7,42 @@ pool:
 variables:
   SONARQUBE_URL: 'http://localhost:9000'
   SONARQUBE_PROJECT_KEY: 'My-Project'  # Replace with your actual SonarQube project key
+  SONARQUBE_TOKEN: '$(SONARQUBE_TOKEN)'  # This should be stored as a secret variable in Azure DevOps
+
+resources:
+  repositories:
+    - repository: self  # This checks out the GitHub repository where the azure-pipelines.yml file resides
+    - repository: sonarqube-issue-fixer
+      type: git
+      name: SonarQube Issue Fixer/SonarQube Issue Fixer  # Replace with your Azure DevOps organization/project/repository name
 
 steps:
-- checkout: self  # This checks out the GitHub repository where the azure-pipelines.yml file resides
+- checkout: self  # Checkout the GitHub repository
+
+- checkout: sonarqube-issue-fixer  # Checkout the Azure DevOps repository containing Docker files and scripts
 
 - script: |
-    docker-compose -f $(Build.SourcesDirectory)/sonarqube-project/docker-compose.yml up -d
+    ls -al $(Build.SourcesDirectory)  # List the files in the main directory for debugging
+    ls -al $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project  # List the files in the sonarqube-project directory for debugging
+  displayName: 'List files in source and sonarqube-project directory'
+
+- script: |
+    docker-compose -f $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/docker-compose.yml up -d
   displayName: 'Start SonarQube and PostgreSQL'
 
 - script: |
-    echo "sonar.host.url=$(SONARQUBE_URL)" > $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner/sonar-scanner.properties
-    echo "sonar.login=$(SONARQUBE_TOKEN)" >> $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner/sonar-scanner.properties
-    echo "sonar.projectKey=$(SONARQUBE_PROJECT_KEY)" >> $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner/sonar-scanner.properties
-    echo "sonar.sources=." >> $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner/sonar-scanner.properties
-    echo "sonar.projectName=MyProject" >> $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner/sonar-scanner.properties
+    echo "sonar.host.url=$(SONARQUBE_URL)" > $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties
+    echo "sonar.login=$(SONARQUBE_TOKEN)" >> $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties
+    echo "sonar.projectKey=$(SONARQUBE_PROJECT_KEY)" >> $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties
+    echo "sonar.sources=." >> $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties
+    echo "sonar.projectName=MyProject" >> $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties
   displayName: 'Configure SonarScanner Properties'
 
 - script: |
-    docker build -t my-sonar-scanner $(Build.SourcesDirectory)/sonarqube-project/sonar-scanner
+    docker build -t my-sonar-scanner $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/sonar-scanner
     docker run --network sonarnet --rm -v $(Build.SourcesDirectory):/usr/src my-sonar-scanner
   displayName: 'Run SonarScanner'
 
 - script: |
-    docker-compose -f $(Build.SourcesDirectory)/sonarqube-project/docker-compose.yml down
+    docker-compose -f $(Build.SourcesDirectory)/sonarqube-issue-fixer/sonarqube-project/docker-compose.yml down
   displayName: 'Stop SonarQube and PostgreSQL'
