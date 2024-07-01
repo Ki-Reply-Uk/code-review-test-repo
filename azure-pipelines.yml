@@ -14,7 +14,7 @@ resources:
     - repository: self  # This checks out the GitHub repository where the azure-pipelines.yml file resides
     - repository: sonarqube-issue-fixer
       type: git
-      name: kireplyuk/SonarQube Issue Fixer/SonarQube Issue Fixer  # Replace with your Azure DevOps organization/project/repository name
+      name: "SonarQube Issue Fixer/SonarQube Issue Fixer"  # Replace with your Azure DevOps organization/project/repository name
 
 steps:
 - checkout: self  # Checkout the GitHub repository
