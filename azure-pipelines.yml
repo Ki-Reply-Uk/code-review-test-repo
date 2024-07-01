@@ -30,8 +30,24 @@ steps:
   displayName: 'Wait for SonarQube to initialize'
 
 - script: |
+    echo "Waiting for SonarQube to be available..."
+    for i in {1..24}; do
+      if curl -s -f -o /dev/null "$(SONARQUBE_URL)/api/system/health"; then
+        health=$(curl -s "$(SONARQUBE_URL)/api/system/health" | jq -r .status)
+        if [ "$health" = "GREEN" ]; then
+          echo "SonarQube is up and running"
+          break
+        fi
+      fi
+      echo "SonarQube is unavailable or not fully initialized - waiting"
+      docker logs sonarqube | tail -n 20
+      sleep 10
+    done
+  displayName: 'Wait for SonarQube to be available'
+
+- script: |
     echo "Configuring SonarScanner properties..."
-    echo "sonar.host.url=http://sonarqube:9000" > "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
+    echo "sonar.host.url=$(SONARQUBE_URL)" > "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
     echo "sonar.login=$SONARQUBE_TOKEN" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
     echo "sonar.projectKey=$(SONARQUBE_PROJECT_KEY)" >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
     echo "sonar.sources=." >> "$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties"
