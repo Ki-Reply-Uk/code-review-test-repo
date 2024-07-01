@@ -7,18 +7,10 @@ pool:
 resources:
   repositories:
     - repository: self  # This will reference the pipeline-scripts repository itself
-    - repository: code
-      type: github
-      name: your-github-username/project-root
-      endpoint: your-github-service-connection
 
 variables:
   SONARQUBE_URL: 'http://localhost:9000'
   SONARQUBE_PROJECT_KEY: 'My-Project'
-
-# Reference the variable group where SONARQUBE_TOKEN is stored
-variableGroups:
-- name: YourVariableGroupName
 
 steps:
 - task: JavaToolInstaller@0
@@ -28,7 +20,6 @@ steps:
   displayName: 'Set up Java JDK 11'
 
 - checkout: self
-- checkout: code
 
 - script: |
     docker-compose -f $(Build.SourcesDirectory)/pipeline-scripts/docker-compose.yml up -d
