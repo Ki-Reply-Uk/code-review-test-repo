@@ -1,0 +1,44 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+resources:
+  repositories:
+    - repository: self  # This checks out the GitHub repository where the azure-pipelines.yml file resides
+    - repository: sonarqube-issue-fixer
+      type: git
+      name: "SonarQube Issue Fixer/SonarQube Issue Fixer"  # Replace with actual values, quoted to handle spaces
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
+
+- checkout: self
+- checkout: sonarqube-issue-fixer
+
+- task: SonarQubePrepare@5
+  inputs:
+    SonarQube: 'SonarQube Service Connection'
+    scannerMode: 'CLI'
+    configMode: 'file'
+    configFile: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install dependencies'
+
+- script: |
+    python -m pytest
+  displayName: 'Run tests'
+
+- task: SonarQubeAnalyze@5
+
+- task: SonarQubePublish@5
+  inputs:
+    pollingTimeoutSec: '300'
+
