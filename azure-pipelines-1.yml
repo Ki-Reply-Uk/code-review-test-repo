@@ -4,12 +4,15 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-resources:
-  repositories:
-    - repository: self  # This checks out the GitHub repository where the azure-pipelines.yml file resides
-    - repository: sonarqube-issue-fixer
-      type: git
-      name: "SonarQube Issue Fixer/SonarQube Issue Fixer"  # Replace with actual values, quoted to handle spaces
+variables:
+  SONARQUBE_VERSION: '8.9.0-community'
+  SONARQUBE_PORT: '9000'
+  SONARQUBE_CONTAINER_NAME: 'sonarqube'
+  SONARQUBE_USERNAME: 'admin'
+  SONARQUBE_PASSWORD: 'admin'
+  SONARQUBE_TOKEN_NAME: 'azure-devops-token'
+  SONARQUBE_PROJECT_KEY: 'your_dynamic_project_key'
+  SONARQUBE_PROJECT_NAME: 'your_dynamic_project_name'
 
 steps:
 - task: UsePythonVersion@0
@@ -18,14 +21,50 @@ steps:
     addToPath: true
 
 - checkout: self
-- checkout: sonarqube-issue-fixer
+
+- script: |
+    docker run -d --name $(SONARQUBE_CONTAINER_NAME) -p $(SONARQUBE_PORT):9000 sonarqube:$(SONARQUBE_VERSION)
+    # Wait for SonarQube to be fully up and running
+    for i in {1..30}; do
+      if curl -s http://localhost:$(SONARQUBE_PORT) | grep -q "SonarQube"; then
+        echo "SonarQube is up and running"
+        break
+      else
+        echo "Waiting for SonarQube to start..."
+        sleep 10
+      fi
+    done
+  displayName: 'Start SonarQube Docker Container'
+
+- script: |
+    # Generate SonarQube token
+    until $(curl -s -X POST -u $(SONARQUBE_USERNAME):$(SONARQUBE_PASSWORD) "http://localhost:$(SONARQUBE_PORT)/api/user_tokens/generate" -d "name=$(SONARQUBE_TOKEN_NAME)" -o token.json); do
+      echo "Waiting for SonarQube to be ready..."
+      sleep 10
+    done
+    cat token.json
+    export SONARQUBE_TOKEN=$(jq -r '.token' token.json)
+    echo "##vso[task.setvariable variable=SONARQUBE_TOKEN;issecret=true]$SONARQUBE_TOKEN"
+  displayName: 'Generate SonarQube Token'
+  env:
+    SONARQUBE_USERNAME: $(SONARQUBE_USERNAME)
+    SONARQUBE_PASSWORD: $(SONARQUBE_PASSWORD)
+
+- script: |
+    # Create SonarQube project
+    curl -X POST -u $(SONARQUBE_TOKEN): ""http://localhost:$(SONARQUBE_PORT)/api/projects/create"" -d "name=$(SONARQUBE_PROJECT_NAME)" -d "project=$(SONARQUBE_PROJECT_KEY)"
+  displayName: 'Create SonarQube Project'
 
 - task: SonarQubePrepare@5
   inputs:
-    SonarQube: 'sq_service_connection'
     scannerMode: 'CLI'
-    configMode: 'file'
-    configFile: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties'
+    configMode: 'manual'
+    cliProjectKey: $(SONARQUBE_PROJECT_KEY)
+    cliProjectName: $(SONARQUBE_PROJECT_NAME)
+    cliSources: '.'
+    extraProperties: |
+      sonar.host.url=http://localhost:$(SONARQUBE_PORT)
+      sonar.login=$(SONARQUBE_TOKEN)
 
 - script: |
     python -m pip install --upgrade pip
@@ -42,3 +81,7 @@ steps:
   inputs:
     pollingTimeoutSec: '300'
 
+- script: |
+    docker stop $(SONARQUBE_CONTAINER_NAME)
+    docker rm $(SONARQUBE_CONTAINER_NAME)
+  displayName: 'Stop and remove SonarQube Docker Container'
