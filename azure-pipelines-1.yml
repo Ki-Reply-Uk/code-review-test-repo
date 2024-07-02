@@ -22,7 +22,7 @@ steps:
 
 - task: SonarQubePrepare@5
   inputs:
-    SonarQube: 'SonarQube Service Connection'
+    SonarQube: 'sq_service_connection'
     scannerMode: 'CLI'
     configMode: 'file'
     configFile: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar-scanner/sonar-scanner.properties'
