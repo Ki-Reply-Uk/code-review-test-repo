@@ -27,6 +27,7 @@ steps:
 - script: |
     echo "Giving SonarQube time to initialize..."
     sleep 120
+    docker network ls
   displayName: 'Wait for SonarQube to initialize'
 
 # - script: |
