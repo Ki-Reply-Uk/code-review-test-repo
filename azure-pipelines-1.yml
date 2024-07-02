@@ -42,7 +42,6 @@ steps:
       echo "Waiting for SonarQube to be ready..."
       sleep 10
     done
-    cat token.json
     export SONARQUBE_TOKEN=$(jq -r '.token' token.json)
     echo "##vso[task.setvariable variable=SONARQUBE_TOKEN;issecret=true]$SONARQUBE_TOKEN"
   displayName: 'Generate SonarQube Token'
@@ -52,7 +51,7 @@ steps:
 
 - script: |
     # Create SonarQube project
-    curl -X POST -u $(SONARQUBE_TOKEN): ""http://localhost:$(SONARQUBE_PORT)/api/projects/create"" -d "name=$(SONARQUBE_PROJECT_NAME)" -d "project=$(SONARQUBE_PROJECT_KEY)"
+    curl -X POST -u $(SONARQUBE_TOKEN): "http://localhost:$(SONARQUBE_PORT)/api/projects/create" -d "name=$(SONARQUBE_PROJECT_NAME)" -d "project=$(SONARQUBE_PROJECT_KEY)"
   displayName: 'Create SonarQube Project'
 
 - task: SonarQubePrepare@5
