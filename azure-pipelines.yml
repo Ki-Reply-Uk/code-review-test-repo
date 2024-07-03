@@ -9,7 +9,6 @@ variables:
   sonarCloudOrganization: 'kireplyuk'
   sonarCloudProjectKey: 'kireplyuk_test-project'
   sonarCloudProjectName: 'Test Project'
-  sonarCloudToken: '7b5c07aaab9d7781d6f8674a1f8a62b743d42413'
 
 steps:
 - task: SonarCloudPrepare@1
