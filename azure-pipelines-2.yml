@@ -1,47 +1,43 @@
+# Generic Analysis with SonarCloud
+# Specific templates exist for MSBuild, Maven and Gradle. Use this template for other types of build.
+#
+# * If necessary, create an endpoint to connect to SonarCloud
+#
+# * Set the sonarCloudXXX variables below
+# 
+# * Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/en-gb/azure/devops/pipelines/create-first-pipeline
+
 trigger:
-- main
+- master
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  SONARCLOUD_ORG: 'kireplyuk' # Replace with your SonarCloud organization key
-  SONARCLOUD_PROJECT_KEY: 'kireplyuk_test-project' # Replace with your SonarCloud project key
-  SONARCLOUD_TOKEN: '8de44ea2bcda67a8847fedb42389c667672b48db' # Replace with your SonarCloud token
+  sonarCloudEndpointName: 'sonarcloud_service_connection'
+  sonarCloudOrganization: 'kireplyuk'
+  sonarCloudProjectKey: 'kireplyuk_test-project'
+  sonarCloudProjectName: 'Test Project'
 
 steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.x'
-    addToPath: true
-
-- checkout: self
-
 - task: SonarCloudPrepare@1
   inputs:
-    SonarCloud: 'SonarCloud Service Connection'
-    organization: '$(SONARCLOUD_ORG)'
+    SonarCloud: '$(sonarCloudEndpointName)'
+    organization: '$(sonarCloudOrganization)'
     scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: '$(SONARCLOUD_PROJECT_KEY)'
-    cliProjectName: 'Your Project Name' # Replace with your project name
-    cliSources: '.'
-    extraProperties: |
-      sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
-      sonar.organization=$(SONARCLOUD_ORG)
-      sonar.login=$(SONARCLOUD_TOKEN)
+    cliProjectKey: '$(sonarCloudProjectKey)'
+    cliProjectName: '$(sonarCloudProjectName)'
+    cliProjectVersion: '1.0'
+    cliSources: 'src'
 
-- script: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-  displayName: 'Install dependencies'
-
-- script: |
-    python -m pytest
-  displayName: 'Run tests'
+# Add your build task(s) here
 
 - task: SonarCloudAnalyze@1
 
-- task: SonarCloudPublish@1
-  inputs:
-    pollingTimeoutSec: '300'
+# Uncomment the next task to wait until SonarCloud processing has
+# finished and to publish the result on the Pipeline build summary
+#- task: SonarCloudPublish@1
+#  inputs:
+#    pollingTimeoutSec: '300'
