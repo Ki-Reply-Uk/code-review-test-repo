@@ -1,0 +1,47 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  SONARCLOUD_ORG: 'kireplyuk' # Replace with your SonarCloud organization key
+  SONARCLOUD_PROJECT_KEY: 'kireplyuk_test-project' # Replace with your SonarCloud project key
+  SONARCLOUD_TOKEN: '8de44ea2bcda67a8847fedb42389c667672b48db' # Replace with your SonarCloud token
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.x'
+    addToPath: true
+
+- checkout: self
+
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'SonarCloud Service Connection'
+    organization: '$(SONARCLOUD_ORG)'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '$(SONARCLOUD_PROJECT_KEY)'
+    cliProjectName: 'Your Project Name' # Replace with your project name
+    cliSources: '.'
+    extraProperties: |
+      sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
+      sonar.organization=$(SONARCLOUD_ORG)
+      sonar.login=$(SONARCLOUD_TOKEN)
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
+  displayName: 'Install dependencies'
+
+- script: |
+    python -m pytest
+  displayName: 'Run tests'
+
+- task: SonarCloudAnalyze@1
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
