@@ -12,7 +12,7 @@ trigger:
 - master
 
 pool:
-  vmImage: 'ubuntu-latest'
+ vmImage: windows-latest
 
 variables:
   sonarCloudEndpointName: 'sonarcloud_service_connection'
@@ -23,14 +23,10 @@ variables:
 steps:
 - task: SonarCloudPrepare@1
   inputs:
-    SonarCloud: '$(sonarCloudEndpointName)'
-    organization: '$(sonarCloudOrganization)'
-    scannerMode: 'CLI'
-    configMode: 'manual'
-    cliProjectKey: '$(sonarCloudProjectKey)'
-    cliProjectName: '$(sonarCloudProjectName)'
-    cliProjectVersion: '1.0'
-    cliSources: 'src'
+    SonarCloud: 'sonarcloud_service_connection'
+    organization: 'kireplyuk'
+    scannerMode: 'MSBuild'
+    projectKey: 'kireplyuk_test-project'
 
 # Add your build task(s) here
 
