@@ -31,17 +31,7 @@ steps:
     # Here, it's assumed that the build script is a simple echo command for illustration.
   displayName: 'Build the project'
 
-# Trigger SonarScan using SonarScanner CLI
-- script: |
-    sonar-scanner \
-      -Dsonar.projectKey=$(sonarCloudProjectKey) \
-      -Dsonar.organization=$(sonarCloudOrganization) \
-      -Dsonar.sources=$(System.DefaultWorkingDirectory) \
-      -Dsonar.host.url=https://sonarcloud.io \
-      -Dsonar.login=$(sonarCloudToken)
-  displayName: 'Run SonarQube Analysis'
-  env:
-    SONAR_TOKEN: $(sonarCloudToken)
+- task: SonarCloudAnalyze@1
 
 # Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
 #- task: SonarCloudPublish@1
