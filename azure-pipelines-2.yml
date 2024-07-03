@@ -1,39 +1,49 @@
-# Generic Analysis with SonarCloud
-# Specific templates exist for MSBuild, Maven and Gradle. Use this template for other types of build.
-#
-# * If necessary, create an endpoint to connect to SonarCloud
-#
-# * Set the sonarCloudXXX variables below
-# 
-# * Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/en-gb/azure/devops/pipelines/create-first-pipeline
-
 trigger:
 - master
 
 pool:
- vmImage: windows-latest
+  vmImage: 'ubuntu-latest'
 
 variables:
   sonarCloudEndpointName: 'sonarcloud_service_connection'
   sonarCloudOrganization: 'kireplyuk'
   sonarCloudProjectKey: 'kireplyuk_test-project'
   sonarCloudProjectName: 'Test Project'
+  sonarCloudToken: '7b5c07aaab9d7781d6f8674a1f8a62b743d42413'
 
 steps:
 - task: SonarCloudPrepare@1
   inputs:
-    SonarCloud: 'sonarcloud_service_connection'
-    organization: 'kireplyuk'
-    scannerMode: 'MSBuild'
-    projectKey: 'kireplyuk_test-project'
+    SonarCloud: '$(sonarCloudEndpointName)'
+    organization: '$(sonarCloudOrganization)'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '$(sonarCloudProjectKey)'
+    cliProjectName: '$(sonarCloudProjectName)'
+    cliProjectVersion: '1.0'
+    cliSources: '.'  # Update this to the correct source directory
 
 # Add your build task(s) here
+- script: |
+    echo "Building the project..."
+    # Replace this with your actual build command, for example:
+    # dotnet build, mvn clean install, etc.
+    # Here, it's assumed that the build script is a simple echo command for illustration.
+  displayName: 'Build the project'
 
-- task: SonarCloudAnalyze@1
+# Trigger SonarScan using SonarScanner CLI
+- script: |
+    sonar-scanner \
+      -Dsonar.projectKey=$(sonarCloudProjectKey) \
+      -Dsonar.organization=$(sonarCloudOrganization) \
+      -Dsonar.sources=$(System.DefaultWorkingDirectory) \
+      -Dsonar.host.url=https://sonarcloud.io \
+      -Dsonar.login=$(sonarCloudToken)
+  displayName: 'Run SonarQube Analysis'
+  env:
+    SONAR_TOKEN: $(sonarCloudToken)
 
-# Uncomment the next task to wait until SonarCloud processing has
-# finished and to publish the result on the Pipeline build summary
+# Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
 #- task: SonarCloudPublish@1
 #  inputs:
 #    pollingTimeoutSec: '300'
