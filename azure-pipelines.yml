@@ -11,7 +11,7 @@ variables:
   sonarCloudProjectName: 'Test Project'
 
 steps:
-- task: SonarCloudPrepare@1
+- task: SonarCloudPrepare@2
   inputs:
     SonarCloud: '$(sonarCloudEndpointName)'
     organization: '$(sonarCloudOrganization)'
@@ -30,9 +30,9 @@ steps:
     # Here, it's assumed that the build script is a simple echo command for illustration.
   displayName: 'Build the project'
 
-- task: SonarCloudAnalyze@1
+- task: SonarCloudAnalyze@2
 
 # Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
-- task: SonarCloudPublish@1
+- task: SonarCloudPublish@2
   inputs:
     pollingTimeoutSec: '300'
