@@ -56,8 +56,7 @@ def get(filename):
         numstr   = n1 + (n2 << 32)
         longlen  = l1 + (l2 << 32)
         shortlen = s1 + (s2 << 32)
-        flags    = f1 + (f2 << 32)
-    else:
+     else:
         version, numstr, longlen, shortlen, flags = struct.unpack('5l', data)
 
     delimiter = datfile.read(1)
