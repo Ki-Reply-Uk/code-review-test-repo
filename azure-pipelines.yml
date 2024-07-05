@@ -10,7 +10,18 @@ variables:
   sonarCloudProjectKey: 'kireplyuk_test-project'
   sonarCloudProjectName: 'Test Project'
 
+resources:
+  repositories:
+    - repository: self
+    - repository: sonarqube-issue-fixer
+      type: git
+      name: "SonarQube Issue Fixer/SonarQube Issue Fixer"
+
 steps:
+
+- checkout: self
+- checkout: sonarqube-issue-fixer
+
 - task: SonarCloudPrepare@2
   inputs:
     SonarCloud: '$(sonarCloudEndpointName)'
@@ -36,3 +47,16 @@ steps:
 - task: SonarCloudPublish@2
   inputs:
     pollingTimeoutSec: '300'
+
+# Run Python script to retrieve SonarCloud issues
+- script: |
+    python $(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/fetch_sonarcloud_issues.py $(SONAR_TOKEN)
+  displayName: 'Retrieve SonarCloud Issues'
+  workingDirectory: $(System.DefaultWorkingDirectory)
+
+# Publish issues as an artifact
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(System.DefaultWorkingDirectory)/issues.json'
+    artifactName: 'SonarCloudIssues'
+    publishLocation: 'pipeline'
