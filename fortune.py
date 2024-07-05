@@ -52,7 +52,6 @@ def get(filename):
     data = datfile.read(5 * LONG_SIZE)
     if is_64_bit:
         v1, v2, n1, n2, l1, l2, s1, s2, f1, f2 = struct.unpack('!10L', data)
-        version  = v1 + (v2 << 32)
         numstr   = n1 + (n2 << 32)
         longlen  = l1 + (l2 << 32)
         shortlen = s1 + (s2 << 32)
