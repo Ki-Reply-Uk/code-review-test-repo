@@ -96,7 +96,7 @@ def play_once():
 
         except (EOFError, KeyboardInterrupt):
             # End-Of-File : the user
-            print '\nOK; give up if you like.'
+            print('\nOK; give up if you like.')
             return
 
         if len(query)==1:
@@ -107,17 +107,17 @@ def play_once():
                       "I think you made that guess just to see "
                       "what I would say.")
             elif len(possibilities)>1:
-                print "You don't have enough information yet."
+                print("You don't have enough information yet.")
                 # Temporarily remove the user's guess from
                 # possibilities, and pick a random letter.
                 temp=filter(lambda x, query=query: x!=query, possibilities)
                 r=int(random.random()*len(temp))
-                print "How do you know it isn't", temp[r]+',',
-                print "for example?"
+                print("How do you know it isn't", temp[r]+',',
+                "for example?")
             else:
                 # query is in possibilities, and
                 # len(possibilities)==1, so the user is right.
-                print "Yes, you've done it.  Good work!" ; return
+                print("Yes, you've done it.  Good work!") ; return
         elif questions.has_key(query):
             # Get the field of the letter_stats tuple to compare.
             field=questions[query]
@@ -142,19 +142,19 @@ def play_once():
                                              possibilities)
             new_length=len(possibilities)
             if field in asked:
-                print "You asked me that already."
-                print "The answer is the same as before:",
+                print("You asked me that already.")
+                print("The answer is the same as before:",)
             else: asked.append(field)  # Note that this question was asked.
-            print str(result)+'.'
+            print(str(result)+'.')
             if (original_length==new_length):
-                print 'That was a wasted question; it did not exclude any possibilities.'
+                print('That was a wasted question; it did not exclude any possibilities.')
             elif (new_length<original_length/2 or new_length==1):
-                print "Good question."
+                print("Good question.")
         else:
-            print "I don't understand the question."
+            print("I don't understand the question.")
 
 # Print the instructions
-print """This is a guessing game about capital letters.
+print("""This is a guessing game about capital letters.
 You can ask various questions about the features of the letter:
 curves, loose ends, obliques (or diagonals), horizontals, verticals.
 To make a guess, just enter the letter of your choice.
@@ -176,6 +176,8 @@ Sample transcript:
 # Play a single game
 play_once()
 raw_input("Press Return>")
+""")
+""")
 
 # The solution to the bug-hunt is below...
 
