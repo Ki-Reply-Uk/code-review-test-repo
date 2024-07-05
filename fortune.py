@@ -55,7 +55,6 @@ def get(filename):
         version  = v1 + (v2 << 32)
         numstr   = n1 + (n2 << 32)
         longlen  = l1 + (l2 << 32)
-        shortlen = s1 + (s2 << 32)
         flags    = f1 + (f2 << 32)
     else:
         version, numstr, longlen, shortlen, flags = struct.unpack('5l', data)
