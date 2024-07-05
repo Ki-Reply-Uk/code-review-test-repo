@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import random, string
+import random, string, logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Logic game
 # From a program by Judith Haris, John Swets, and Wallace Feurzeig
@@ -96,28 +98,27 @@ def play_once():
 
         except (EOFError, KeyboardInterrupt):
             # End-Of-File : the user
-            print '\nOK; give up if you like.'
+            logging.info('\nOK; give up if you like.')
             return
 
         if len(query)==1:
             # The query is one character long, so it's a guess
             if query not in possibilities:
-                print ("Wrong!  That guess is inconsistent "
+                logging.error("Wrong!  That guess is inconsistent "
                       "with the information you've been given.\n"
                       "I think you made that guess just to see "
                       "what I would say.")
             elif len(possibilities)>1:
-                print "You don't have enough information yet."
+                logging.info("You don't have enough information yet.")
                 # Temporarily remove the user's guess from
                 # possibilities, and pick a random letter.
                 temp=filter(lambda x, query=query: x!=query, possibilities)
                 r=int(random.random()*len(temp))
-                print "How do you know it isn't", temp[r]+',',
-                print "for example?"
+                logging.info(f"How do you know it isn't {temp[r]}, for example?")
             else:
                 # query is in possibilities, and
                 # len(possibilities)==1, so the user is right.
-                print "Yes, you've done it.  Good work!" ; return
+                logging.info("Yes, you've done it.  Good work!") ; return
         elif questions.has_key(query):
             # Get the field of the letter_stats tuple to compare.
             field=questions[query]
@@ -142,16 +143,16 @@ def play_once():
                                              possibilities)
             new_length=len(possibilities)
             if field in asked:
-                print "You asked me that already."
-                print "The answer is the same as before:",
+                logging.info("You asked me that already.")
+                logging.info("The answer is the same as before:")
             else: asked.append(field)  # Note that this question was asked.
-            print str(result)+'.'
+            logging.info(f'{result}.')
             if (original_length==new_length):
-                print 'That was a wasted question; it did not exclude any possibilities.'
+                logging.warning('That was a wasted question; it did not exclude any possibilities.')
             elif (new_length<original_length/2 or new_length==1):
-                print "Good question."
+                logging.info("Good question.")
         else:
-            print "I don't understand the question."
+            logging.error("I don't understand the question.")
 
 # Print the instructions
 print """This is a guessing game about capital letters.
