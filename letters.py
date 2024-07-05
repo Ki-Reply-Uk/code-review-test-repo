@@ -96,7 +96,7 @@ def play_once():
 
         except (EOFError, KeyboardInterrupt):
             # End-Of-File : the user
-            print '\nOK; give up if you like.'
+            print '\nOK; you can give up if you like. If you're stuck or no longer interested, it's fine to stop.'
             return
 
         if len(query)==1:
