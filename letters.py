@@ -81,7 +81,7 @@ def play_once():
 
     # Loop forever; the play_once() function will exit by hitting a
     # 'return' statement inside the loop.
-    while (1):
+    while (True):
         try:
             #print possibilities                                            # (for debugging)
 
@@ -96,7 +96,7 @@ def play_once():
 
         except (EOFError, KeyboardInterrupt):
             # End-Of-File : the user
-            print('\nOK; give up if you like.')
+            print '\nOK; give up if you like.'
             return
 
         if len(query)==1:
