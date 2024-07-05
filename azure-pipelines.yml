@@ -22,35 +22,27 @@ steps:
 - checkout: self
 - checkout: sonarqube-issue-fixer
 
-- task: SonarCloudPrepare@2
-  inputs:
-    SonarCloud: '$(sonarCloudEndpointName)'
-    organization: '$(sonarCloudOrganization)'
-    scannerMode: 'CLI'
-    configMode: 'manual'
-    cliProjectKey: '$(sonarCloudProjectKey)'
-    cliProjectName: '$(sonarCloudProjectName)'
-    cliProjectVersion: '1.0'
-    cliSources: '.'  # Update this to the correct source directory
+# - task: SonarCloudPrepare@2
+#   inputs:
+#     SonarCloud: '$(sonarCloudEndpointName)'
+#     organization: '$(sonarCloudOrganization)'
+#     scannerMode: 'CLI'
+#     configMode: 'manual'
+#     cliProjectKey: '$(sonarCloudProjectKey)'
+#     cliProjectName: '$(sonarCloudProjectName)'
+#     cliProjectVersion: '1.0'
+#     cliSources: '.'  # Update this to the correct source directory
 
-# Add your build task(s) here
-- script: |
-    echo "Building the project..."
-    # Replace this with your actual build command, for example:
-    # dotnet build, mvn clean install, etc.
-    # Here, it's assumed that the build script is a simple echo command for illustration.
-  displayName: 'Build the project'
+# - task: SonarCloudAnalyze@2
 
-- task: SonarCloudAnalyze@2
-
-# Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
-- task: SonarCloudPublish@2
-  inputs:
-    pollingTimeoutSec: '300'
+# # Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
+# - task: SonarCloudPublish@2
+#   inputs:
+#     pollingTimeoutSec: '300'
 
 # Run Python script to retrieve SonarCloud issues
 - script: |
-    python $(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/fetch_sonarcloud_issues.py $(SONAR_TOKEN)
+    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/fetch_sonarcloud_issues.py' $(SONAR_TOKEN)
   displayName: 'Retrieve SonarCloud Issues'
   workingDirectory: $(System.DefaultWorkingDirectory)
 
