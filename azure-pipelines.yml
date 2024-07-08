@@ -96,10 +96,3 @@ steps:
     OPENAI_MODEL: $(OPENAI_MODEL)
     REPO_URL: $(REPO_URL)
   workingDirectory: $(System.DefaultWorkingDirectory)
-
-# - script: |
-#     # Run your Weaviate API
-#     python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/api/main.py'
-#   displayName: 'Run Weaviate API'
-#   env:
-#     WEAVIATE_URL: 'http://localhost:8080'
