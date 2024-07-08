@@ -57,26 +57,18 @@ steps:
   inputs:
     versionSpec: '3.10'  # Specify the required Python version here
     addToPath: true
-
-# Verify the presence of requirements.txt
-- script: |
-    ls -la '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts'
-    cat '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
-  displayName: 'Verify requirements.txt path and content'
     
-# Restore cache
-- task: Cache@2
-  inputs:
-    key: 'python | "$(Agent.OS)" | $(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
-    path: ~/.cache/pip
-    cacheHitVar: CACHE_RESTORED
+# # Restore cache
+# - task: Cache@2
+#   inputs:
+#     key: 'python | "$(Agent.OS)" | $(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
+#     path: ~/.cache/pip
+#     cacheHitVar: CACHE_RESTORED
 
-# Install Python dependencies only if the cache is not restored
+# Install Python dependencies
 - script: |
-    if [ -z "$(CACHE_RESTORED)" ]; then
-      python -m pip install --upgrade pip
-      pip install -r '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt' --cache-dir ~/.cache/pip
-    fi
+    python -m pip install --upgrade pip
+    pip install -r '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
   displayName: 'Install Python Dependencies'
   workingDirectory: $(System.DefaultWorkingDirectory)
 
