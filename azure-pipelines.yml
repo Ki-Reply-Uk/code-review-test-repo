@@ -19,10 +19,17 @@ jobs:
 - job: RunSonarCloudAndWeaviate
   pool:
     vmImage: 'ubuntu-latest'
-  container:
-    image: docker:stable-dind
-    options: --privileged
   steps:
+  - task: DockerInstaller@0
+    inputs:
+      dockerVersion: '20.10.14'
+    displayName: 'Install Docker'
+
+  - script: |
+      sudo systemctl start docker
+      sudo docker --version
+    displayName: 'Start Docker service'
+
   - task: DockerCompose@0
     inputs:
       containerregistrytype: 'Container Registry'
@@ -80,7 +87,7 @@ jobs:
 
   - script: |
       # Run your Weaviate API
-      python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/vector_database/app.py'
+      python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/api/main.py'
     displayName: 'Run Weaviate API'
     env:
       WEAVIATE_URL: 'http://localhost:8080'
