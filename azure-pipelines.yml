@@ -18,7 +18,7 @@ variables:
 - name: sonarCloudEndpointName 
   value: 'sonarcloud_service_connection'
 - name: sonarCloudProjectName 
-  value: 'Test Project 4'
+  value: 'Demo Project'
 - group: Code_Fix_Agent_dotenv
 
 resources:
