@@ -1,5 +1,15 @@
 trigger:
-- master
+  branches:
+    include:
+      - main
+  paths:
+    exclude:
+      - '*'
+
+pr:
+  branches:
+    exclude:
+      - '*'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -8,7 +18,7 @@ variables:
 - name: sonarCloudEndpointName 
   value: 'sonarcloud_service_connection'
 - name: sonarCloudProjectName 
-  value: 'Test Project'
+  value: 'Test Project 3'
 - group: Code_Fix_Agent_dotenv
 
 resources:
@@ -22,30 +32,23 @@ steps:
 
 - checkout: self
 
-# - task: SonarCloudPrepare@2
-#   inputs:
-#     SonarCloud: '$(sonarCloudEndpointName)'
-#     organization: '$(SONAR_ORGANISATION)'
-#     scannerMode: 'CLI'
-#     configMode: 'manual'
-#     cliProjectKey: '$(SONAR_PROJECT_KEY)'
-#     cliProjectName: '$(sonarCloudProjectName)'
-#     cliProjectVersion: '1.0'
-#     cliSources: '.'  # Update this to the correct source directory
+- task: SonarCloudPrepare@2
+  inputs:
+    SonarCloud: '$(sonarCloudEndpointName)'
+    organization: '$(SONAR_ORGANISATION)'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '$(SONAR_PROJECT_KEY)'
+    cliProjectName: '$(sonarCloudProjectName)'
+    cliProjectVersion: '1.0'
+    cliSources: '.'  # Update this to the correct source directory
 
-# - task: SonarCloudAnalyze@2
+- task: SonarCloudAnalyze@2
 
-# # Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
-# - task: SonarCloudPublish@2
-#   inputs:
-#     pollingTimeoutSec: '300'
-
-# # Publish issues as an artifact
-# - task: PublishPipelineArtifact@1
-#   inputs:
-#     targetPath: '$(System.DefaultWorkingDirectory)/issues.json'
-#     artifactName: 'SonarCloudIssues'
-#     publishLocation: 'pipeline'
+# Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
+- task: SonarCloudPublish@2
+  inputs:
+    pollingTimeoutSec: '300'
 
 - checkout: sonarqube-issue-fixer
 
@@ -54,11 +57,20 @@ steps:
   inputs:
     versionSpec: '3.10'  # Specify the required Python version here
     addToPath: true
+    
+# Restore cache
+- task: Cache@2
+  inputs:
+    key: 'python | "$(Agent.OS)" | requirements.txt'
+    path: ~/.cache/pip
+    cacheHitVar: CACHE_RESTORED
 
-# Install Python dependencies
+# Install Python dependencies only if the cache is not restored
 - script: |
-    python -m pip install --upgrade pip
-    pip install -r '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
+    if [ -z "$(CACHE_RESTORED)" ]; then
+      python -m pip install --upgrade pip
+      pip install -r '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt' --cache-dir ~/.cache/pip
+    fi
   displayName: 'Install Python Dependencies'
   workingDirectory: $(System.DefaultWorkingDirectory)
 
@@ -67,6 +79,13 @@ steps:
     python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
   displayName: 'Retrieve SonarCloud Issues'
   workingDirectory: $(System.DefaultWorkingDirectory)
+
+# Publish issues as an artifact
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(System.DefaultWorkingDirectory)/issues.json'
+    artifactName: 'SonarCloudIssues'
+    publishLocation: 'pipeline'
 
 # Run agent.py script using issues.json as input
 - script: |
@@ -80,9 +99,9 @@ steps:
     REPO_URL: $(REPO_URL)
   workingDirectory: $(System.DefaultWorkingDirectory)
 
-- script: |
-    # Run your Weaviate API
-    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/api/main.py'
-  displayName: 'Run Weaviate API'
-  env:
-    WEAVIATE_URL: 'http://localhost:8080'
+# - script: |
+#     # Run your Weaviate API
+#     python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/api/main.py'
+#   displayName: 'Run Weaviate API'
+#   env:
+#     WEAVIATE_URL: 'http://localhost:8080'
