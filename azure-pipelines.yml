@@ -80,7 +80,7 @@ jobs:
 
   - script: |
       # Run your Weaviate API
-      python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/api/main.py'
+      python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/vector_database/app.py'
     displayName: 'Run Weaviate API'
     env:
       WEAVIATE_URL: 'http://localhost:8080'
