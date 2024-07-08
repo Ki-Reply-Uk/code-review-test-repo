@@ -22,32 +22,38 @@ steps:
 
 - checkout: self
 
-- task: SonarCloudPrepare@2
+# - task: SonarCloudPrepare@2
+#   inputs:
+#     SonarCloud: '$(sonarCloudEndpointName)'
+#     organization: '$(SONAR_ORGANISATION)'
+#     scannerMode: 'CLI'
+#     configMode: 'manual'
+#     cliProjectKey: '$(SONAR_PROJECT_KEY)'
+#     cliProjectName: '$(sonarCloudProjectName)'
+#     cliProjectVersion: '1.0'
+#     cliSources: '.'  # Update this to the correct source directory
+
+# - task: SonarCloudAnalyze@2
+
+# # Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
+# - task: SonarCloudPublish@2
+#   inputs:
+#     pollingTimeoutSec: '300'
+
+# - checkout: sonarqube-issue-fixer
+
+# # Publish issues as an artifact
+# - task: PublishPipelineArtifact@1
+#   inputs:
+#     targetPath: '$(System.DefaultWorkingDirectory)/issues.json'
+#     artifactName: 'SonarCloudIssues'
+#     publishLocation: 'pipeline'
+
+# Use a specific Python version
+- task: UsePythonVersion@0
   inputs:
-    SonarCloud: '$(sonarCloudEndpointName)'
-    organization: '$(SONAR_ORGANISATION)'
-    scannerMode: 'CLI'
-    configMode: 'manual'
-    cliProjectKey: '$(SONAR_PROJECT_KEY)'
-    cliProjectName: '$(sonarCloudProjectName)'
-    cliProjectVersion: '1.0'
-    cliSources: '.'  # Update this to the correct source directory
-
-- task: SonarCloudAnalyze@2
-
-# Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
-- task: SonarCloudPublish@2
-  inputs:
-    pollingTimeoutSec: '300'
-
-- checkout: sonarqube-issue-fixer
-
-# Publish issues as an artifact
-- task: PublishPipelineArtifact@1
-  inputs:
-    targetPath: '$(System.DefaultWorkingDirectory)/issues.json'
-    artifactName: 'SonarCloudIssues'
-    publishLocation: 'pipeline'
+    versionSpec: '3.10'  # Specify the required Python version here
+    addToPath: true
 
 # Install Python dependencies
 - script: |
