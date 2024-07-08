@@ -5,8 +5,11 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  sonarCloudEndpointName: 'sonarcloud_service_connection'
-  sonarCloudProjectName: 'Test Project'
+- name: sonarCloudEndpointName 
+  value: 'sonarcloud_service_connection'
+- name: sonarCloudProjectName 
+  value: 'Test Project'
+- group: Code_Fix_Agent_dotenv
 
 resources:
   repositories:
@@ -15,79 +18,65 @@ resources:
       type: git
       name: "SonarQube Issue Fixer/SonarQube Issue Fixer"
 
-jobs:
-- job: RunSonarCloudAndWeaviate
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - task: DockerInstaller@0
-    inputs:
-      dockerVersion: '20.10.14'
-    displayName: 'Install Docker'
+steps:
 
-  - script: |
-      sudo systemctl start docker
-      sudo docker --version
-    displayName: 'Start Docker service'
+- checkout: self
 
-  - task: DockerCompose@0
-    inputs:
-      containerregistrytype: 'Container Registry'
-      dockerComposeFile: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/docker-compose.azure.yml'
-      action: 'Run services'
-      detached: true
-    displayName: 'Start Weaviate services'
+- task: SonarCloudPrepare@2
+  inputs:
+    SonarCloud: '$(sonarCloudEndpointName)'
+    organization: '$(SONAR_ORGANISATION)'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '$(SONAR_PROJECT_KEY)'
+    cliProjectName: '$(sonarCloudProjectName)'
+    cliProjectVersion: '1.0'
+    cliSources: '.'  # Update this to the correct source directory
 
-  - script: |
-      # Wait for Weaviate to be ready
-      timeout=300
-      while [[ $timeout -gt 0 ]]; do
-        if curl -s http://localhost:8080/v1/.well-known/ready | grep -q "OK"; then
-          echo "Weaviate is ready"
-          break
-        fi
-        sleep 5
-        ((timeout-=5))
-      done
-      if [[ $timeout -le 0 ]]; then
-        echo "Timed out waiting for Weaviate"
-        exit 1
-      fi
-    displayName: 'Wait for Weaviate to be ready'
+- task: SonarCloudAnalyze@2
 
-  - task: SonarCloudPrepare@2
-    inputs:
-      SonarCloud: '$(sonarCloudEndpointName)'
-      organization: '$(SONAR_ORGANISATION)'
-      scannerMode: 'CLI'
-      configMode: 'manual'
-      cliProjectKey: '$(SONAR_PROJECT_KEY)'
-      cliProjectName: '$(sonarCloudProjectName)'
-      cliProjectVersion: '1.0'
-      cliSources: '.'
+# Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
+- task: SonarCloudPublish@2
+  inputs:
+    pollingTimeoutSec: '300'
 
-  - task: SonarCloudAnalyze@2
+- checkout: sonarqube-issue-fixer
 
-  - task: SonarCloudPublish@2
-    inputs:
-      pollingTimeoutSec: '300'
+# Install Python dependencies
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
+  displayName: 'Install Python Dependencies'
+  workingDirectory: $(System.DefaultWorkingDirectory)
 
-  - checkout: sonarqube-issue-fixer
+# Run Python script to retrieve SonarCloud issues
+- script: |
+    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
+  displayName: 'Retrieve SonarCloud Issues'
+  workingDirectory: $(System.DefaultWorkingDirectory)
 
-  - script: |
-      python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
-    displayName: 'Retrieve SonarCloud Issues'
-    workingDirectory: $(System.DefaultWorkingDirectory)
+# Run agent.py script using issues.json as input
+- script: |
+    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/agent.py' '$(System.DefaultWorkingDirectory)/issues.json'
+  displayName: 'Run Agent Script'
+  env:
+    CURRENT_BRANCH: $(CURRENT_BRANCH)
+    GITHUB_ACCESS_TOKEN: $(GITHUB_ACCESS_TOKEN)
+    OPENAI_API_KEY: $(OPENAI_API_KEY)
+    OPENAI_MODEL: $(OPENAI_MODEL)
+    REPO_URL: $(REPO_URL)
+  workingDirectory: $(System.DefaultWorkingDirectory)
 
-  - task: PublishPipelineArtifact@1
-    inputs:
-      targetPath: '$(System.DefaultWorkingDirectory)/issues.json'
-      artifactName: 'SonarCloudIssues'
-      publishLocation: 'pipeline'
+# Publish issues as an artifact
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(System.DefaultWorkingDirectory)/issues.json'
+    artifactName: 'SonarCloudIssues'
+    publishLocation: 'pipeline'
 
-  - script: |
-      # Run your Weaviate API
-      python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/api/main.py'
-    displayName: 'Run Weaviate API'
-    env:
-      WEAVIATE_URL: 'http://localhost:8080'
+- script: |
+    # Run your Weaviate API
+    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/api/main.py'
+  displayName: 'Run Weaviate API'
+  env:
+    WEAVIATE_URL: 'http://localhost:8080'
