@@ -33,7 +33,7 @@ jobs:
   - task: DockerCompose@0
     inputs:
       containerregistrytype: 'Container Registry'
-      dockerComposeFile: '**/docker-compose.azure.yml'
+      dockerComposeFile: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/docker-compose.azure.yml'
       action: 'Run services'
       detached: true
     displayName: 'Start Weaviate services'
