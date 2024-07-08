@@ -32,23 +32,23 @@ steps:
 
 - checkout: self
 
-# - task: SonarCloudPrepare@2
-#   inputs:
-#     SonarCloud: '$(sonarCloudEndpointName)'
-#     organization: '$(SONAR_ORGANISATION)'
-#     scannerMode: 'CLI'
-#     configMode: 'manual'
-#     cliProjectKey: '$(SONAR_PROJECT_KEY)'
-#     cliProjectName: '$(sonarCloudProjectName)'
-#     cliProjectVersion: '1.0'
-#     cliSources: '.'  # Update this to the correct source directory
+- task: SonarCloudPrepare@2
+  inputs:
+    SonarCloud: '$(sonarCloudEndpointName)'
+    organization: '$(SONAR_ORGANISATION)'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '$(SONAR_PROJECT_KEY)'
+    cliProjectName: '$(sonarCloudProjectName)'
+    cliProjectVersion: '1.0'
+    cliSources: '.'  # Update this to the correct source directory
 
-# - task: SonarCloudAnalyze@2
+- task: SonarCloudAnalyze@2
 
-# # Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
-# - task: SonarCloudPublish@2
-#   inputs:
-#     pollingTimeoutSec: '300'
+# Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
+- task: SonarCloudPublish@2
+  inputs:
+    pollingTimeoutSec: '300'
 
 - checkout: sonarqube-issue-fixer
 
