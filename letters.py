@@ -111,7 +111,7 @@ def play_once():
                 # possibilities, and pick a random letter.
                 temp=filter(lambda x, query=query: x!=query, possibilities)
                 r=int(random.random()*len(temp))
-                print "How do you know it isn't", temp[r]+',',
+                print("How do you know it isn't", temp[r]+',', end=' ')
                 print "for example?"
             else:
                 # query is in possibilities, and
