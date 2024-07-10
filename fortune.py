@@ -56,7 +56,7 @@ def get(filename):
         flags    = f1 + (f2 << 32)
     else:
         _, numstr, longlen, _, flags = struct.unpack('5l', data)
-        _, numstr, _, _, flags = struct.unpack('5l', data)
+        _, numstr, _, _, _ = struct.unpack('5l', data)
 
     delimiter = datfile.read(1)
     datfile.read(3)                     # Throw away padding bytes
