@@ -1,4 +1,3 @@
-
 #
 # Copyright (c) 2010, Andrew M. Kuchling
 # 
@@ -160,6 +159,8 @@ curves, loose ends, obliques (or diagonals), horizontals, verticals.
 To make a guess, just enter the letter of your choice.
 
 Sample transcript:
+ print("""This is a guessing game about capital letters.
+
         Next? curves?
         1.
         Good question.
