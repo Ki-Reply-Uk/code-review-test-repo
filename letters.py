@@ -82,7 +82,6 @@ def play_once():
     # Loop forever; the play_once() function will exit by hitting a
     # 'return' statement inside the loop.
     while (True):
-    while (1):
         try:
             #print possibilities                                            # (for debugging)
 
@@ -103,7 +102,7 @@ def play_once():
         if len(query)==1:
             # The query is one character long, so it's a guess
             if query not in possibilities:
-                print("Wrong!  That guess is inconsistent "
+                print ("Wrong!  That guess is inconsistent "
                       "with the information you've been given.\n"
                       "I think you made that guess just to see "
                       "what I would say.")
@@ -155,7 +154,7 @@ def play_once():
             print("I don't understand the question.")
 
 # Print the instructions
-print """This is a guessing game about capital letters.
+print("""This is a guessing game about capital letters.
 You can ask various questions about the features of the letter:
 curves, loose ends, obliques (or diagonals), horizontals, verticals.
 To make a guess, just enter the letter of your choice.
@@ -176,7 +175,7 @@ Sample transcript:
 
 # Play a single game
 play_once()
-raw_input("Press Return>")
+input("Press Return>")
 
 # The solution to the bug-hunt is below...
 
