@@ -1,4 +1,3 @@
-
 #
 # Copyright (c) 2010, Andrew M. Kuchling
 # 
@@ -86,7 +85,7 @@ def play_once():
             #print possibilities                                            # (for debugging)
 
             # Get input from the user
-            query=raw_input('Next? ')
+            query=input('Next? ')
             # Convert the input to lowercase
             query=string.lower(query)
             # Remove all non-letter characters
@@ -102,7 +101,7 @@ def play_once():
         if len(query)==1:
             # The query is one character long, so it's a guess
             if query not in possibilities:
-                print ("Wrong!  That guess is inconsistent "
+                print("Wrong!  That guess is inconsistent "
                       "with the information you've been given.\n"
                       "I think you made that guess just to see "
                       "what I would say.")
@@ -171,7 +170,7 @@ Sample transcript:
         Next? s
         You don't have enough information yet.
         How do you know it isn't c, for example?
-"""
+""")
 
 # Play a single game
 play_once()
