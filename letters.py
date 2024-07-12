@@ -153,7 +153,7 @@ def play_once():
             elif (new_length<original_length/2 or new_length==1):
                 print "Good question."
         else:
-            print "I don't understand the question."
+            sys.stdout.write("I don't understand the question.\n")
 
 # Print the instructions
 print """This is a guessing game about capital letters.
