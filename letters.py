@@ -108,7 +108,7 @@ def play_once():
                       "I think you made that guess just to see "
                       "what I would say.")
             elif len(possibilities)>1:
-                print "You don't have enough information yet."
+                print("You don't have enough information yet.")
                 # Temporarily remove the user's guess from
                 # possibilities, and pick a random letter.
                 temp=filter(lambda x, query=query: x!=query, possibilities)
