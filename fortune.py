@@ -1,3 +1,4 @@
+
 # fortune.py -- chooses a random fortune, as the fortune(8) program in
 #               the BSD-games package does
 #
@@ -50,10 +51,10 @@ def get(filename):
     datfile = open(filename+'.dat', 'r')
     data = datfile.read(5 * LONG_SIZE)
     if is_64_bit:
-        _, n1, n2, _, _, s1, s2, _, _ = struct.unpack('!10L', data)
+        _, n1, n2, s1, s2 = struct.unpack('!10L', data)[:5]
         numstr   = n1 + (n2 << 32)
     else:
-        _, numstr, _, _, _ = struct.unpack('5l', data)
+        _, numstr = struct.unpack('5l', data)[:2]
 
     delimiter = datfile.read(1)
     datfile.read(3)                     # Throw away padding bytes
@@ -76,7 +77,7 @@ def get(filename):
     quotation = file.read(end-start)
     L=string.split(quotation, '\n')
     while string.strip(L[-1]) == delimiter or string.strip(L[-1]) == "":
-        L=L[:-1]
+        L = L[:-1]
     return string.join(L, '\n')
 
 if __name__ == '__main__':
