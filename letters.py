@@ -154,7 +154,7 @@ def play_once():
             print "I don't understand the question."
 
 # Print the instructions
-print """This is a guessing game about capital letters.
+print("""This is a guessing game about capital letters.
 You can ask various questions about the features of the letter:
 curves, loose ends, obliques (or diagonals), horizontals, verticals.
 To make a guess, just enter the letter of your choice.
@@ -171,11 +171,11 @@ Sample transcript:
         Next? s
         You don't have enough information yet.
         How do you know it isn't c, for example?
-"""
+""")
 
 # Play a single game
 play_once()
-raw_input("Press Return>")
+input("Press Return>")
 
 # The solution to the bug-hunt is below...
 
