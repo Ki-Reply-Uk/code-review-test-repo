@@ -117,7 +117,8 @@ def play_once():
             else:
                 # query is in possibilities, and
                 # len(possibilities)==1, so the user is right.
-                print "Yes, you've done it.  Good work!" ; return
+                import sys
+                sys.stdout.write("Yes, you've done it.  Good work!\n") ; return
         elif questions.has_key(query):
             # Get the field of the letter_stats tuple to compare.
             field=questions[query]
