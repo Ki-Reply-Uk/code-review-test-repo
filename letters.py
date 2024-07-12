@@ -145,7 +145,7 @@ def play_once():
                 print("You asked me that already.")
                 print("The answer is the same as before:", end=' ')
             else: asked.append(field)  # Note that this question was asked.
-            print str(result)+'.'
+            print(str(result) + '.')
             if (original_length==new_length):
                 print 'That was a wasted question; it did not exclude any possibilities.'
             elif (new_length<original_length/2 or new_length==1):
