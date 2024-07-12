@@ -111,7 +111,8 @@ def play_once():
                 # Temporarily remove the user's guess from
                 # possibilities, and pick a random letter.
                 temp=filter(lambda x, query=query: x!=query, possibilities)
-                r=int(random.random()*len(temp))
+                temp = list(temp)
+                r = int(random.random() * len(temp))
                 print "How do you know it isn't", temp[r]+',',
                 print "for example?"
             else:
