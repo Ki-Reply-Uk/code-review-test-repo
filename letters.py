@@ -147,7 +147,7 @@ def play_once():
             else: asked.append(field)  # Note that this question was asked.
             print(str(result) + '.')
             if (original_length==new_length):
-                print 'That was a wasted question; it did not exclude any possibilities.'
+                print('That was a wasted question; it did not exclude any possibilities.')
             elif (new_length<original_length/2 or new_length==1):
                 print "Good question."
         else:
