@@ -22,6 +22,9 @@
 
 import random, string
 
+
+print("Hello World")
+
 # Logic game
 # From a program by Judith Haris, John Swets, and Wallace Feurzeig
 # Reference: The Secret Guide to Computers, by Russ Walter, 18th ed 1993.
