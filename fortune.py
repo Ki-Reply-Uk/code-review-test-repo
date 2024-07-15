@@ -1,6 +1,4 @@
 
-# Print a hello world message
-print("Hello World")
 
 # fortune.py -- chooses a random fortune, as the fortune(8) program in
 #               the BSD-games package does
