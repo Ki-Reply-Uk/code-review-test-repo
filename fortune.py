@@ -30,6 +30,7 @@ LONG_SIZE = struct.calcsize('L')
 is_64_bit = (LONG_SIZE == 8)
 
 def get(filename):
+    print("Hello, world!")
     "Select a random quotation, using a pregenerated .dat file"
 
     # First, we open the .dat file, and read the header information.
