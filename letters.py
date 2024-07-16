@@ -66,28 +66,25 @@ questions={'curves':CURVES, 'looseends':LOOSE_ENDS,
 
 def get_user_query():
     try:
-        query = raw_input('Next? ')
-        query = string.lower(query)
-        query = filter(lambda x: x in string.lowercase, query)
-        query = string.strip(query)
+        query = input('Next? ')
+        query = query.lower()
+        query = ''.join(filter(str.isalpha, query))
+        query = query.strip()
         return query
     except (EOFError, KeyboardInterrupt):
-        print '\nOK; give up if you like.'
+        print('\nOK; give up if you like.')
         return None
 
 def process_single_character_query(query, possibilities):
     if query not in possibilities:
-        print ("Wrong!  That guess is inconsistent "
-              "with the information you've been given.\n"
-              "I think you made that guess just to see "
-              "what I would say.")
+        print("Wrong!  That guess is inconsistent with the information you've been given.\nI think you made that guess just to see what I would say.")
     elif len(possibilities) > 1:
-        print "You don't have enough information yet."
-        temp = filter(lambda x, query=query: x != query, possibilities)
+        print("You don't have enough information yet.")
+        temp = [x for x in possibilities if x != query]
         r = int(random.random() * len(temp))
-        print "How do you know it isn't", temp[r] + ',', "for example?"
+        print(f"How do you know it isn't {temp[r]}, for example?")
     else:
-        print "Yes, you've done it.  Good work!"
+        print("Yes, you've done it.  Good work!")
         return True
     return False
 
@@ -95,26 +92,23 @@ def process_question_query(query, choice, possibilities, asked):
     field = questions[query]
     result = letter_stats[choice][field]
     original_length = len(possibilities)
-    possibilities = filter(lambda letter, letter_stats=letter_stats,
-                           field=field, result=result:
-                           letter_stats[letter][field] == result,
-                           possibilities)
+    possibilities = [letter for letter in possibilities if letter_stats[letter][field] == result]
     new_length = len(possibilities)
     if field in asked:
-        print "You asked me that already."
-        print "The answer is the same as before:",
+        print("You asked me that already.")
+        print("The answer is the same as before:", end=' ')
     else:
         asked.append(field)
-    print str(result) + '.'
+    print(f"{result}.")
     if original_length == new_length:
-        print 'That was a wasted question; it did not exclude any possibilities.'
+        print('That was a wasted question; it did not exclude any possibilities.')
     elif new_length < original_length / 2 or new_length == 1:
-        print "Good question."
+        print("Good question.")
     return possibilities
 
 def play_once():
     choice = chr(ord('a') + int(26 * random.random()))
-    possibilities = string.lower("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    possibilities = "abcdefghijklmnopqrstuvwxyz"
     asked = []
 
     while True:
@@ -125,10 +119,10 @@ def play_once():
         if len(query) == 1:
             if process_single_character_query(query, possibilities):
                 return
-        elif questions.has_key(query):
+        elif query in questions:
             possibilities = process_question_query(query, choice, possibilities, asked)
         else:
-            print "I don't understand the question."
+            print("I don't understand the question.")
 
 # Print the instructions
 print """This is a guessing game about capital letters.
