@@ -55,12 +55,6 @@ steps:
     versionSpec: '3.10'  # Specify the required Python version here
     addToPath: true
     
-# # Restore cache
-# - task: Cache@2
-#   inputs:
-#     key: 'python | "$(Agent.OS)" | $(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
-#     path: ~/.cache/pip
-#     cacheHitVar: CACHE_RESTORED
 
 # Install Python dependencies
 - script: |
