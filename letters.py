@@ -85,39 +85,14 @@ def play_once():
         try:
             #print possibilities                                            # (for debugging)
 
-            # Get input from the user
-            query=raw_input('Next? ')
-            # Convert the input to lowercase
-            query=string.lower(query)
-            # Remove all non-letter characters
-            query=filter(lambda x: x in string.lowercase, query)
-            # Remove whitespace
-            query=string.strip(query)
+            query = get_user_input()
 
         except (EOFError, KeyboardInterrupt):
             # End-Of-File : the user
             print '\nOK; give up if you like.'
             return
 
-        if len(query)==1:
-            # The query is one character long, so it's a guess
-            if query not in possibilities:
-                print ("Wrong!  That guess is inconsistent "
-                      "with the information you've been given.\n"
-                      "I think you made that guess just to see "
-                      "what I would say.")
-            elif len(possibilities)>1:
-                print "You don't have enough information yet."
-                # Temporarily remove the user's guess from
-                # possibilities, and pick a random letter.
-                temp=filter(lambda x, query=query: x!=query, possibilities)
-                r=int(random.random()*len(temp))
-                print "How do you know it isn't", temp[r]+',',
-                print "for example?"
-            else:
-                # query is in possibilities, and
-                # len(possibilities)==1, so the user is right.
-                print "Yes, you've done it.  Good work!" ; return
+        handle_guess(query, possibilities)
         elif questions.has_key(query):
             # Get the field of the letter_stats tuple to compare.
             field=questions[query]
