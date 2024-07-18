@@ -154,7 +154,8 @@ def play_once():
             print "I don't understand the question."
 
 # Print the instructions
-print """This is a guessing game about capital letters.
+import sys
+sys.stdout.write("""This is a guessing game about capital letters.
 You can ask various questions about the features of the letter:
 curves, loose ends, obliques (or diagonals), horizontals, verticals.
 To make a guess, just enter the letter of your choice.
