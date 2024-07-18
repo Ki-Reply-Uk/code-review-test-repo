@@ -24,6 +24,7 @@
 
 import struct, string, sys
 
+print("Hello, world!")
 if len(sys.argv)==1:
     print("Usage: strfile.py <filename>")
     sys.exit()
