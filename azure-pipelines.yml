@@ -2,7 +2,6 @@ trigger:
   branches:
     include:
       - main
-
 pr:
   branches:
     exclude:
@@ -26,7 +25,6 @@ resources:
       name: "SonarQube Issue Fixer/SonarQube Issue Fixer"
 
 steps:
-
 - checkout: self
 
 - task: SonarCloudPrepare@2
@@ -38,47 +36,50 @@ steps:
     cliProjectKey: '$(SONAR_PROJECT_KEY)'
     cliProjectName: '$(sonarCloudProjectName)'
     cliProjectVersion: '1.0'
-    cliSources: '.'  # Update this to the correct source directory
+    cliSources: '.'
 
 - task: SonarCloudAnalyze@2
 
-# Uncomment the next task to wait until SonarCloud processing has finished and to publish the result on the Pipeline build summary
 - task: SonarCloudPublish@2
   inputs:
     pollingTimeoutSec: '300'
-
 - checkout: sonarqube-issue-fixer
 
-# Use a specific Python version
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.10'  # Specify the required Python version here
+    versionSpec: '3.10'
     addToPath: true
     
 
-# Install Python dependencies
 - script: |
+    cd '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
+    if [ ! -d "venv" ]; then
+      python -m venv venv
+    fi
+    source venv/bin/activate
     python -m pip install --upgrade pip
-    pip install -r '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
-  displayName: 'Install Python Dependencies'
-  workingDirectory: $(System.DefaultWorkingDirectory)
+    pip install -r scripts/requirements.txt
+  displayName: 'Setup and Update venv'
 
 # Run Python script to retrieve SonarCloud issues
 - script: |
-    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
+    cd '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
+    source venv/bin/activate
+    python scripts/fetch_sonarcloud_issues.py $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
   displayName: 'Retrieve SonarCloud Issues'
-  workingDirectory: $(System.DefaultWorkingDirectory)
 
 # Publish issues as an artifact
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(System.DefaultWorkingDirectory)/issues.json'
+    targetPath: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/issues.json'
     artifactName: 'SonarCloudIssues'
     publishLocation: 'pipeline'
 
 # Run agent.py script using issues.json as input
 - script: |
-    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/agent.py' '$(System.DefaultWorkingDirectory)/issues.json'
+    cd '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
+    source venv/bin/activate
+    python scripts/agent.py 'issues.json'
   displayName: 'Run Agent Script'
   env:
     CURRENT_BRANCH: $(CURRENT_BRANCH)
@@ -86,4 +87,3 @@ steps:
     OPENAI_API_KEY: $(OPENAI_API_KEY)
     OPENAI_MODEL: $(OPENAI_MODEL)
     REPO_URL: $(REPO_URL)
-  workingDirectory: $(System.DefaultWorkingDirectory)
