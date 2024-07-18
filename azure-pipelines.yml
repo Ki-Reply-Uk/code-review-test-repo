@@ -53,8 +53,9 @@ steps:
 
 - task: Cache@2
   inputs:
-    key: 'python | "$(Agent.OS)" | $(PYTHON_VERSION) | $(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
+    key: 'python | "$(Agent.OS)" | "$(PYTHON_VERSION)" | $(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
     restoreKeys: |
+      python | "$(Agent.OS)" | "$(PYTHON_VERSION)"
       python | "$(Agent.OS)"
       python
     path: $(Pipeline.Workspace)/venv
