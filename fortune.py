@@ -84,6 +84,7 @@ def get(filename):
     return string.join(L, '\n')
 
 if __name__ == '__main__':
+    print("Hello World")
     import sys
     if len(sys.argv) == 1:
         print 'Usage: fortune.py <filename>'
