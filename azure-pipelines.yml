@@ -72,8 +72,6 @@ steps:
     python --version
     echo "Pip version:"
     pip --version
-    echo "Installed packages:"
-    pip list
   displayName: 'Verify Python Environment'
 
 # Run Python script to retrieve SonarCloud issues
