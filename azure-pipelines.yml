@@ -2,6 +2,7 @@ trigger:
   branches:
     include:
       - main
+      
 pr:
   branches:
     exclude:
@@ -9,14 +10,14 @@ pr:
 
 pool:
   vmImage: 'ubuntu-latest'
-
 variables:
 - name: sonarCloudEndpointName 
   value: 'sonarcloud_service_connection'
 - name: sonarCloudProjectName 
   value: 'Demo Project'
 - group: Code_Fix_Agent_dotenv
-
+- name: PYTHON_VERSION
+  value: '3.10'
 resources:
   repositories:
     - repository: self
@@ -47,38 +48,39 @@ steps:
 
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '3.10'
+    versionSpec: '$(PYTHON_VERSION)'
     addToPath: true
-    
 
+- task: Cache@2
+  inputs:
+    key: 'python | "$(Agent.OS)" | $(PYTHON_VERSION) | $(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
+    restoreKeys: |
+      python | "$(Agent.OS)"
+      python
+    path: $(Pipeline.Workspace)/venv
 - script: |
-    echo "Current directory: $(pwd)"
-    echo "Listing contents of current directory:"
-    ls -la
-    echo "Changing to SonarQube Issue Fixer directory"
-    cd '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
-    echo "New current directory: $(pwd)"
-    echo "Listing contents of SonarQube Issue Fixer directory:"
-    ls -la
-    echo "Creating virtual environment"
-    python -m venv venv
-    echo "Activating virtual environment"
-    source venv/bin/activate
-    echo "Upgrading pip"
+    python -m venv $(Pipeline.Workspace)/venv
+    source $(Pipeline.Workspace)/venv/bin/activate
     python -m pip install --upgrade pip
-    echo "Installing requirements"
-    pip install -r scripts/requirements.txt
-    echo "Listing installed packages"
+    pip install -r '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
+  displayName: 'Setup Python venv'
+  condition: ne(variables['CacheRestored'], 'true')
+- script: |
+    source $(Pipeline.Workspace)/venv/bin/activate
+    echo "Python version:"
+    python --version
+    echo "Pip version:"
+    pip --version
+    echo "Installed packages:"
     pip list
-  displayName: 'Setup and Update venv'
-  continueOnError: true
+  displayName: 'Verify Python Environment'
 
 # Run Python script to retrieve SonarCloud issues
 - script: |
-    cd '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
-    source venv/bin/activate
-    python scripts/fetch_sonarcloud_issues.py $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
+    source $(Pipeline.Workspace)/venv/bin/activate
+    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
   displayName: 'Retrieve SonarCloud Issues'
+  workingDirectory: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
 
 # Publish issues as an artifact
 - task: PublishPipelineArtifact@1
@@ -89,10 +91,10 @@ steps:
 
 # Run agent.py script using issues.json as input
 - script: |
-    cd '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
-    source venv/bin/activate
+    source $(Pipeline.Workspace)/venv/bin/activate
     python scripts/agent.py 'issues.json'
   displayName: 'Run Agent Script'
+  workingDirectory: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
   env:
     CURRENT_BRANCH: $(CURRENT_BRANCH)
     GITHUB_ACCESS_TOKEN: $(GITHUB_ACCESS_TOKEN)
