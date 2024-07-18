@@ -52,14 +52,26 @@ steps:
     
 
 - script: |
+    echo "Current directory: $(pwd)"
+    echo "Listing contents of current directory:"
+    ls -la
+    echo "Changing to SonarQube Issue Fixer directory"
     cd '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
-    if [ ! -d "venv" ]; then
-      python -m venv venv
-    fi
+    echo "New current directory: $(pwd)"
+    echo "Listing contents of SonarQube Issue Fixer directory:"
+    ls -la
+    echo "Creating virtual environment"
+    python -m venv venv
+    echo "Activating virtual environment"
     source venv/bin/activate
+    echo "Upgrading pip"
     python -m pip install --upgrade pip
+    echo "Installing requirements"
     pip install -r scripts/requirements.txt
+    echo "Listing installed packages"
+    pip list
   displayName: 'Setup and Update venv'
+  continueOnError: true
 
 # Run Python script to retrieve SonarCloud issues
 - script: |
