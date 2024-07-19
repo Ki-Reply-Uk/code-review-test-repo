@@ -94,7 +94,8 @@ write_long(0)                           # Flags; we'll set them to zero
 output.write(delimiter + '\0'*(LONG_SIZE-1))
 output.close()
 
-print('''"%s.dat" created
-There were %i strings
-Longest string: %i bytes
-Shortest string: %i bytes''' % (filename, numstr, longest, shortest))
+import logging
+logging.info('"%s.dat" created', filename)
+logging.info('There were %i strings', numstr)
+logging.info('Longest string: %i bytes', longest)
+logging.info('Shortest string: %i bytes', shortest)
