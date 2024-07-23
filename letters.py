@@ -83,24 +83,16 @@ def play_once():
     # 'return' statement inside the loop.
     while (1):
         try:
-            #print possibilities                                            # (for debugging)
-
-            # Get input from the user
             query=raw_input('Next? ')
-            # Convert the input to lowercase
             query=string.lower(query)
-            # Remove all non-letter characters
             query=filter(lambda x: x in string.lowercase, query)
-            # Remove whitespace
             query=string.strip(query)
 
         except (EOFError, KeyboardInterrupt):
-            # End-Of-File : the user
             print '\nOK; give up if you like.'
             return
 
         if len(query)==1:
-            # The query is one character long, so it's a guess
             if query not in possibilities:
                 print ("Wrong!  That guess is inconsistent "
                       "with the information you've been given.\n"
@@ -108,34 +100,17 @@ def play_once():
                       "what I would say.")
             elif len(possibilities)>1:
                 print "You don't have enough information yet."
-                # Temporarily remove the user's guess from
-                # possibilities, and pick a random letter.
                 temp=filter(lambda x, query=query: x!=query, possibilities)
                 r=int(random.random()*len(temp))
                 print "How do you know it isn't", temp[r]+',',
                 print "for example?"
             else:
-                # query is in possibilities, and
-                # len(possibilities)==1, so the user is right.
                 print "Yes, you've done it.  Good work!" ; return
         elif questions.has_key(query):
-            # Get the field of the letter_stats tuple to compare.
             field=questions[query]
-            # Determine the answer for the computer's letter
             result=letter_stats[choice][field]
             original_length=len(possibilities)
 
-            # Exclude possibilities that don't match those of the
-            # mystery letter.
-            # filter(func, sequence) calls func() on each element in
-            # the sequence, and returns a new sequence object
-            # containing only elements for which func() returned true.
-            # For strings, each character is an element.  Instead of
-            # defining a formal function, a lambda is used to create
-            # an anonymous function (one without a name).
-            # Various other things required by the function are set
-            # as default arguments, so they're accessible inside the
-            # scope of the anonymous function.
             possibilities=filter(lambda letter, letter_stats=letter_stats,
                                              field=field, result=result:
                                              letter_stats[letter][field]==result,
@@ -144,7 +119,7 @@ def play_once():
             if field in asked:
                 print "You asked me that already."
                 print "The answer is the same as before:",
-            else: asked.append(field)  # Note that this question was asked.
+            else: asked.append(field)
             print str(result)+'.'
             if (original_length==new_length):
                 print 'That was a wasted question; it did not exclude any possibilities.'
