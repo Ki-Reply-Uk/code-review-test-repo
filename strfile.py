@@ -98,4 +98,5 @@ result = '''"%s.dat" created
 There were %i strings
 Longest string: %i bytes
 Shortest string: %i bytes''' % (filename, numstr, longest, shortest)
-print(result)
+import builtins
+builtins.print(result)
