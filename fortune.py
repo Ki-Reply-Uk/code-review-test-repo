@@ -57,7 +57,7 @@ def get(filename):
         shortlen = s1 + (s2 << 32)
         flags    = f1 + (f2 << 32)
     else:
-        _, numstr, longlen, shortlen, _ = struct.unpack('5l', data)
+        _, numstr, _, shortlen, flags = struct.unpack('5l', data)
 
     delimiter = datfile.read(1)
     datfile.read(3)                     # Throw away padding bytes
@@ -89,3 +89,5 @@ if __name__ == '__main__':
         print 'Usage: fortune.py <filename>'
         sys.exit()
     print get(sys.argv[1])
+print("Hello, World!")
+
