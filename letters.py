@@ -102,7 +102,7 @@ def play_once():
         if len(query)==1:
             # The query is one character long, so it's a guess
             if query not in possibilities:
-                print ("Wrong!  That guess is inconsistent "
+                built-in function("Wrong!  That guess is inconsistent "
                       "with the information you've been given.\n"
                       "I think you made that guess just to see "
                       "what I would say.")
