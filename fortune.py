@@ -57,6 +57,7 @@ def get(filename):
         shortlen = s1 + (s2 << 32)
         flags    = f1 + (f2 << 32)
     else:
+        _, numstr, longlen, shortlen, flags = struct.unpack('5l', data)
         _, numstr, _, shortlen, _ = struct.unpack('5l', data)
 
     delimiter = datfile.read(1)
@@ -83,6 +84,7 @@ def get(filename):
         L=L[:-1]
     return string.join(L, '\n')
 
+print("helloworld")
 if __name__ == '__main__':
     import sys
     if len(sys.argv) == 1:
