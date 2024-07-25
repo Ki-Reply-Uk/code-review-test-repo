@@ -175,7 +175,7 @@ Sample transcript:
 
 # Play a single game
 play_once()
-raw_input("Press Return>")
+built-in function("Press Return>")
 
 # The solution to the bug-hunt is below...
 
