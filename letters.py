@@ -96,7 +96,7 @@ def play_once():
 
         except (EOFError, KeyboardInterrupt):
             # End-Of-File : the user
-            built-in function('\nOK; give up if you like.')
+            print '\nOK; give up if you like.'
             return
 
         if len(query)==1:
@@ -175,7 +175,7 @@ Sample transcript:
 
 # Play a single game
 play_once()
-built-in function("Press Return>")
+raw_input("Press Return>")
 
 # The solution to the bug-hunt is below...
 
@@ -201,3 +201,4 @@ built-in function("Press Return>")
 # statistic would have to be *different* for 'C' and 'S', and neither
 # of those two suggestions qualify.  Can you think of a property to
 # distinguish between the two letters?
+print("Hello, World!")
