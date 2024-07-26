@@ -96,7 +96,7 @@ def play_once():
 
         except (EOFError, KeyboardInterrupt):
             # End-Of-File : the user
-            print('\nOK; give up if you like.')
+            print '\nOK; give up if you like.'
             return
 
         if len(query)==1:
@@ -112,7 +112,7 @@ def play_once():
                 # possibilities, and pick a random letter.
                 temp=filter(lambda x, query=query: x!=query, possibilities)
                 r=int(random.random()*len(temp))
-                print("How do you know it isn't", temp[r]+',')
+                print "How do you know it isn't", temp[r]+',',
                 print "for example?"
             else:
                 # query is in possibilities, and
@@ -175,7 +175,7 @@ Sample transcript:
 
 # Play a single game
 play_once()
-raw_input("Press Return>")
+print("Hello, World!")
 
 # The solution to the bug-hunt is below...
 
