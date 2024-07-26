@@ -77,7 +77,7 @@ steps:
 # Run Python script to retrieve SonarCloud issues
 - script: |
     source $(Pipeline.Workspace)/venv/bin/activate
-    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
+    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar_issues/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
   displayName: 'Retrieve SonarCloud Issues'
   workingDirectory: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
 
