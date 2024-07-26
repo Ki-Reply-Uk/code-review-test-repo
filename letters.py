@@ -94,7 +94,7 @@ def play_once():
 
         if len(query)==1:
             if query not in possibilities:
-                print ("Wrong!  That guess is inconsistent "
+                print("Wrong!  That guess is inconsistent "
                       "with the information you've been given.\n"
                       "I think you made that guess just to see "
                       "what I would say.")
@@ -102,10 +102,11 @@ def play_once():
                 print "You don't have enough information yet."
                 temp=filter(lambda x, query=query: x!=query, possibilities)
                 r=int(random.random()*len(temp))
-                print "How do you know it isn't", temp[r]+',',
-                print "for example?"
+                print("How do you know it isn't", temp[r]+',',
+                      "for example?")
             else:
-                print "Yes, you've done it.  Good work!" ; return
+                print("Yes, you've done it.  Good work!")
+                return
         elif questions.has_key(query):
             field=questions[query]
             result=letter_stats[choice][field]
@@ -117,14 +118,14 @@ def play_once():
                                              possibilities)
             new_length=len(possibilities)
             if field in asked:
-                print "You asked me that already."
-                print "The answer is the same as before:",
+                print("You asked me that already.")
+                print("The answer is the same as before:")
             else: asked.append(field)
             print str(result)+'.'
             if (original_length==new_length):
-                print 'That was a wasted question; it did not exclude any possibilities.'
+                print('That was a wasted question; it did not exclude any possibilities.')
             elif (new_length<original_length/2 or new_length==1):
-                print "Good question."
+                print("Good question.")
         else:
             print "I don't understand the question."
 
