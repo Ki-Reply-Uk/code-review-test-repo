@@ -51,9 +51,8 @@ def get(filename):
     datfile = open(filename+'.dat', 'r')
     data = datfile.read(5 * LONG_SIZE)
     if is_64_bit:
-        _, _, n1, n2, l1, l2, s1, s2, f1, f2 = struct.unpack('!10L', data)
+        _, _, n1, n2, _, _, s1, s2, f1, f2 = struct.unpack('!10L', data)
         numstr   = n1 + (n2 << 32)
-        longlen  = l1 + (l2 << 32)
         shortlen = s1 + (s2 << 32)
         flags    = f1 + (f2 << 32)
     else:
@@ -86,6 +85,6 @@ def get(filename):
 if __name__ == '__main__':
     import sys
     if len(sys.argv) == 1:
-        print 'Usage: fortune.py <filename>'
+        print('Usage: fortune.py <filename>')
         sys.exit()
-    print get(sys.argv[1])
+    print(get(sys.argv[1]))
