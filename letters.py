@@ -142,7 +142,7 @@ def play_once():
                                              possibilities)
             new_length=len(possibilities)
             if field in asked:
-                print "You asked me that already."
+                built-in function("You asked me that already.")
                 print "The answer is the same as before:",
             else: asked.append(field)  # Note that this question was asked.
             print str(result)+'.'
