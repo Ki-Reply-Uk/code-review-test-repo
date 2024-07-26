@@ -21,9 +21,9 @@ variables:
 resources:
   repositories:
     - repository: self
-    - repository: sonarqube-issue-fixer
+    - repository: sonar-issue-fixer
       type: git
-      name: "SonarQube Issue Fixer/SonarQube Issue Fixer"
+      name: "SonarQube Issue Fixer/Sonar Issue Fixer"
 
 steps:
 - checkout: self
@@ -44,7 +44,7 @@ steps:
 - task: SonarCloudPublish@2
   inputs:
     pollingTimeoutSec: '300'
-- checkout: sonarqube-issue-fixer
+- checkout: sonar-issue-fixer
 
 - task: UsePythonVersion@0
   inputs:
@@ -63,7 +63,7 @@ steps:
     python -m venv $(Pipeline.Workspace)/venv
     source $(Pipeline.Workspace)/venv/bin/activate
     python -m pip install --upgrade pip
-    pip install -r '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
+    pip install -r '$(Build.SourcesDirectory)/Sonar Issue Fixer/sonarqube-project/scripts/requirements.txt'
   displayName: 'Setup Python venv'
   condition: ne(variables['CacheRestored'], 'true')
 - script: |
@@ -77,14 +77,14 @@ steps:
 # Run Python script to retrieve SonarCloud issues
 - script: |
     source $(Pipeline.Workspace)/venv/bin/activate
-    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar_issues/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
+    python '$(Build.SourcesDirectory)/Sonar Issue Fixer/sonarqube-project/sonar_issues/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
   displayName: 'Retrieve SonarCloud Issues'
-  workingDirectory: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
+  workingDirectory: '$(Build.SourcesDirectory)/Sonar Issue Fixer/sonarqube-project'
 
 # Publish issues as an artifact
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/issues.json'
+    targetPath: '$(Build.SourcesDirectory)/Sonar Issue Fixer/sonarqube-project/issues.json'
     artifactName: 'SonarCloudIssues'
     publishLocation: 'pipeline'
 
@@ -93,7 +93,7 @@ steps:
     source $(Pipeline.Workspace)/venv/bin/activate
     python scripts/agent.py 'issues.json'
   displayName: 'Run Agent Script'
-  workingDirectory: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
+  workingDirectory: '$(Build.SourcesDirectory)/Sonar Issue Fixer/sonarqube-project'
   env:
     CURRENT_BRANCH: $(CURRENT_BRANCH)
     GITHUB_ACCESS_TOKEN: $(GITHUB_ACCESS_TOKEN)
