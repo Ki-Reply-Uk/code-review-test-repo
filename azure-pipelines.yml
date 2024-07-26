@@ -91,7 +91,7 @@ steps:
 # Run agent.py script using issues.json as input
 - script: |
     source $(Pipeline.Workspace)/venv/bin/activate
-    python scripts/agent.py 'issues.json'
+    python scripts/issue_fixer_agent/agent.py 'issues.json'
   displayName: 'Run Agent Script'
   workingDirectory: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
   env:
