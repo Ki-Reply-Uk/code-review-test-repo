@@ -89,7 +89,7 @@ def play_once():
             query=string.strip(query)
 
         except (EOFError, KeyboardInterrupt):
-            print '\nOK; give up if you like.'
+            print('\nOK; give up if you like.')
             return
 
         if len(query)==1:
@@ -99,7 +99,7 @@ def play_once():
                       "I think you made that guess just to see "
                       "what I would say.")
             elif len(possibilities)>1:
-                print "You don't have enough information yet."
+                print("You don't have enough information yet.")
                 temp=filter(lambda x, query=query: x!=query, possibilities)
                 r=int(random.random()*len(temp))
                 print("How do you know it isn't", temp[r]+',',
