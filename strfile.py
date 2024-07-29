@@ -98,4 +98,5 @@ result = '''"%s.dat" created
 There were %i strings
 Longest string: %i bytes
 Shortest string: %i bytes''' % (filename, numstr, longest, shortest)
-print(result)
+import logging
+logging.info(result)
