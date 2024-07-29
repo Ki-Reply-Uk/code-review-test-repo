@@ -96,7 +96,7 @@ def play_once():
 
         except (EOFError, KeyboardInterrupt):
             # End-Of-File : the user
-            built-in function('\nOK; give up if you like.')
+            print('\nOK; give up if you like.')
             return
 
         if len(query)==1:
@@ -142,7 +142,7 @@ def play_once():
                                              possibilities)
             new_length=len(possibilities)
             if field in asked:
-                built-in function("You asked me that already.")
+                print("You asked me that already.")
                 print "The answer is the same as before:",
             else: asked.append(field)  # Note that this question was asked.
             print str(result)+'.'
