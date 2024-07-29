@@ -90,7 +90,7 @@ def play_once():
             # Convert the input to lowercase
             query=string.lower(query)
             # Remove all non-letter characters
-            query=filter(lambda x: x in string.lowercase, query)
+            query=''.join(filter(lambda x: x in string.lowercase, query))
             # Remove whitespace
             query=string.strip(query)
 
