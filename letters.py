@@ -62,6 +62,50 @@ questions={'curves':CURVES, 'looseends':LOOSE_ENDS,
            'obliques':OBLIQUES, 'diagonals':OBLIQUES,
            'horizontals':HORIZONTALS, 'verticals':VERTICALS}
 
+print("hello world")
+
+import random, string
+
+# Logic game
+# From a program by Judith Haris, John Swets, and Wallace Feurzeig
+# Reference: The Secret Guide to Computers, by Russ Walter, 18th ed 1993.
+# Written in Python by A.M. Kuchling (amk@amk.ca)
+
+# For each letter, we need the various characteristics:
+# (curves, loose ends, obliques, horizontals, verticals).
+# There should really be a sample character set for the user to look
+# at; otherwise, there are ambiguities.  For example, does B have
+# horizontals?  Does D?  How about P and R?
+
+# There's a bug lurking in this data!  Can you catch it?
+# (See the bottom of the program for the answer.)
+
+letter_stats={'a': (0, 2, 2, 1, 0), 'b':(2, 0, 0, 3, 1),
+                  'c': (1, 2, 0, 0, 0), 'd':(1, 0, 0, 0, 1),
+                  'e': (0, 3, 0, 3, 1), 'f':(0, 3, 0, 2, 1),
+                  'g': (1, 2, 0, 1, 1), 'h':(0, 4, 0, 1, 2),
+                  'i': (0, 2, 0, 0, 1), 'j':(1, 2, 0, 0, 1),
+                  'k': (0, 4, 2, 0, 1), 'l':(0, 2, 0, 1, 1),
+                  'm': (0, 2, 2, 0, 2), 'n':(0, 2, 1, 0, 2),
+                  'o': (1, 0, 0, 0, 0), 'p':(1, 1, 0, 2, 1),
+                  'q': (1, 2, 1, 0, 0), 'r':(1, 2, 1, 0, 1),
+                  's': (1, 2, 0, 0, 0), 't':(0, 3, 0, 1, 1),
+                  'u': (1, 2, 0, 0, 2), 'v':(0, 2, 2, 0, 0),
+                  'w': (0, 2, 4, 0, 0), 'x':(0, 4, 2, 0, 0),
+                  'y': (0, 3, 2, 0, 1), 'z':(0, 2, 1, 2, 0)}
+
+# We'll define constants for the various statistics; each constant is
+# equal to the position of the statistic in the tuples in
+#letter_stats.
+CURVES=0 ; LOOSE_ENDS=1 ; OBLIQUES=2 ; HORIZONTALS=3 ; VERTICALS=4
+
+# This dictionary is used to map questions to corresponding
+# statistics.  Note that different keys can map to the same value;
+# for example, 'obliques' and 'diagonals' both map to the OBLIQUES constant.
+questions={'curves':CURVES, 'looseends':LOOSE_ENDS,
+           'obliques':OBLIQUES, 'diagonals':OBLIQUES,
+           'horizontals':HORIZONTALS, 'verticals':VERTICALS}
+
 # Play a single game
 
 def play_once():
