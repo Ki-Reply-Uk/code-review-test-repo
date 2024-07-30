@@ -149,3 +149,48 @@ raw_input("Press Return>")
 # statistic would have to be *different* for 'C' and 'S', and neither
 # of those two suggestions qualify.  Can you think of a property to
 # distinguish between the two letters?
+def get_user_input():
+    try:
+        query = raw_input('Next? ')
+        query = string.lower(query)
+        query = filter(lambda x: x in string.lowercase, query)
+        query = string.strip(query)
+        return query
+    except (EOFError, KeyboardInterrupt):
+        print '\nOK; give up if you like.'
+        return None
+
+def handle_guess(query, possibilities):
+    if query not in possibilities:
+        print ("Wrong!  That guess is inconsistent "
+              "with the information you've been given.\n"
+              "I think you made that guess just to see "
+              "what I would say.")
+    elif len(possibilities) > 1:
+        print "You don't have enough information yet."
+        temp = filter(lambda x, query=query: x != query, possibilities)
+        r = int(random.random() * len(temp))
+        print "How do you know it isn't", temp[r] + ',',
+        print "for example?"
+    else:
+        print "Yes, you've done it.  Good work!"
+
+def handle_question(query, choice, possibilities, asked):
+    field = questions[query]
+    result = letter_stats[choice][field]
+    original_length = len(possibilities)
+    possibilities = filter(lambda letter, letter_stats=letter_stats,
+                                       field=field, result=result:
+                                       letter_stats[letter][field] == result,
+                                       possibilities)
+    new_length = len(possibilities)
+    if field in asked:
+        print "You asked me that already."
+        print "The answer is the same as before:",
+    else:
+        asked.append(field)
+    print str(result) + '.'
+    if original_length == new_length:
+        print 'That was a wasted question; it did not exclude any possibilities.'
+    elif new_length < original_length / 2 or new_length == 1:
+        print "Good question."
