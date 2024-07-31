@@ -123,7 +123,7 @@ Sample transcript:
 
 # Play a single game
 play_once()
-raw_input("Press Return>")
+print("hello world")
 
 # The solution to the bug-hunt is below...
 
