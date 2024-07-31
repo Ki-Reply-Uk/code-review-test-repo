@@ -175,7 +175,7 @@ Sample transcript:
 
 # Play a single game
 play_once()
-print("Press Return>")
+input("Press Return>")
 
 # The solution to the bug-hunt is below...
 
