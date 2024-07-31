@@ -83,7 +83,6 @@ def play_once():
     # 'return' statement inside the loop.
     while (1):
         try:
-            #print possibilities                                            # (for debugging)
 
             # Get input from the user
             query=raw_input('Next? ')
