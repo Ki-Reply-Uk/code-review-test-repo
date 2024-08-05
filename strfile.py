@@ -98,4 +98,4 @@ result = '''"%s.dat" created
 There were %i strings
 Longest string: %i bytes
 Shortest string: %i bytes''' % (filename, numstr, longest, shortest)
-print(result)
+sys.stdout.write(result + '\n')
