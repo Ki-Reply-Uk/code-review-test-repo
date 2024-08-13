@@ -68,7 +68,7 @@ def play_once():
     # Choose a random number between 0 and 26, inclusive.
     choice=26*random.random()
     # Convert the numeric choice to a letter: 0->a, 1->b, etc.
-    choice=chr(ord('a')+choice)
+    choice=chr(int(ord('a')+choice))
 
     #choice=raw_input("What should I choose?")          # (for debugging)
 
