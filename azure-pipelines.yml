@@ -88,11 +88,11 @@ steps:
     artifactName: 'SonarCloudIssues'
     publishLocation: 'pipeline'
 
-# Run agent.py script using issues.json as input
+# Run fixer_agent.py script using issues.json as input
 - script: |
     source $(Pipeline.Workspace)/venv/bin/activate
-    python scripts/agent.py 'issues.json'
-  displayName: 'Run Agent Script'
+    python backend/services/sonar_qube_fixer_agent/src/fixer_agent.py 'issues.json'
+  displayName: 'Run Fixer Agent Script'
   workingDirectory: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
   env:
     CURRENT_BRANCH: $(CURRENT_BRANCH)
