@@ -53,7 +53,7 @@ steps:
 
 - task: Cache@2
   inputs:
-    key: 'python | "$(Agent.OS)" | "$(PYTHON_VERSION)" | $(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
+    key: 'python | "$(Agent.OS)" | "$(PYTHON_VERSION)" | $(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/services/sonar_qube_fixer_agent/requirements.txt'
     restoreKeys: |
       python | "$(Agent.OS)" | "$(PYTHON_VERSION)"
       python | "$(Agent.OS)"
@@ -63,7 +63,7 @@ steps:
     python -m venv $(Pipeline.Workspace)/venv
     source $(Pipeline.Workspace)/venv/bin/activate
     python -m pip install --upgrade pip
-    pip install -r '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/scripts/requirements.txt'
+    pip install -r '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/services/sonar_qube_fixer_agent/requirements.txt'
   displayName: 'Setup Python venv'
   condition: ne(variables['CacheRestored'], 'true')
 - script: |
