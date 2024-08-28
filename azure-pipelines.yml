@@ -79,7 +79,7 @@ steps:
 # Run Python script to retrieve SonarCloud issues
 - script: |
     source $(Pipeline.Workspace)/venv/bin/activate
-    python '/home/vsts/work/1/s/SonarQube Issue Fixer/sonarqube-project/sonar_issues/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
+    python '/home/vsts/work/1/s/SonarQube Issue Fixer/sonarqube-project/backend/services/sonar_issues/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
   displayName: 'Retrieve SonarCloud Issues'
   workingDirectory: '/home/vsts/work/1/s/SonarQube Issue Fixer/sonarqube-project'
 
@@ -90,15 +90,18 @@ steps:
     artifactName: 'SonarCloudIssues'
     publishLocation: 'pipeline'
 
-# Run fixer_agent.py script using issues.json as input
-- script: |
-    source $(Pipeline.Workspace)/venv/bin/activate
-    python backend/services/sonar_qube_fixer_agent/src/fixer_agent.py 'issues.json'
-  displayName: 'Run Fixer Agent Script'
-  workingDirectory: '/home/vsts/work/1/s/SonarQube Issue Fixer/sonarqube-project'
-  env:
-    CURRENT_BRANCH: $(CURRENT_BRANCH)
-    GITHUB_ACCESS_TOKEN: $(GITHUB_ACCESS_TOKEN)
-    OPENAI_API_KEY: $(OPENAI_API_KEY)
-    OPENAI_MODEL: $(OPENAI_MODEL)
-    REPO_URL: $(REPO_URL)
+
+
+### THIS WILL BE DONE IN THE UI
+# # Run fixer_agent.py script using issues.json as input
+# - script: |
+#     source $(Pipeline.Workspace)/venv/bin/activate
+#     python backend/services/sonar_qube_fixer_agent/src/fixer_agent.py 'issues.json'
+#   displayName: 'Run Fixer Agent Script'
+#   workingDirectory: '/home/vsts/work/1/s/SonarQube Issue Fixer/sonarqube-project'
+#   env:
+#     CURRENT_BRANCH: $(CURRENT_BRANCH)
+#     GITHUB_ACCESS_TOKEN: $(GITHUB_ACCESS_TOKEN)
+#     OPENAI_API_KEY: $(OPENAI_API_KEY)
+#     OPENAI_MODEL: $(OPENAI_MODEL)
+#     REPO_URL: $(REPO_URL)
