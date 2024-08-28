@@ -19,7 +19,7 @@ variables:
 - name: PYTHON_VERSION
   value: '3.10'
 - name: REQUIREMENTS_PATH
-  value: 'sonarqube-project/backend/services/sonar_qube_fixer_agent/requirements.txt'
+  value: '/home/vsts/work/1/s/SonarQube Issue Fixer/sonarqube-project/backend/services/sonar_qube_fixer_agent/requirements.txt'
 
 resources:
   repositories:
@@ -39,19 +39,19 @@ steps:
 
 # Verify the requirements file exists
 - script: |
-    if [ -f "$(Build.SourcesDirectory)/$(REQUIREMENTS_PATH)" ]; then
-      echo "Requirements file found at $(Build.SourcesDirectory)/$(REQUIREMENTS_PATH)"
+    if [ -f "$(REQUIREMENTS_PATH)" ]; then
+      echo "Requirements file found at $(REQUIREMENTS_PATH)"
     else
-      echo "Requirements file not found at $(Build.SourcesDirectory)/$(REQUIREMENTS_PATH)"
+      echo "Requirements file not found at $(REQUIREMENTS_PATH)"
       echo "Directory contents:"
-      ls -R $(Build.SourcesDirectory)
+      ls -R /home/vsts/work/1/s
       exit 1
     fi
   displayName: 'Verify Requirements File'
 
 - task: Cache@2
   inputs:
-    key: 'python | "$(Agent.OS)" | "$(PYTHON_VERSION)" | $(Build.SourcesDirectory)/$(REQUIREMENTS_PATH)'
+    key: 'python | "$(Agent.OS)" | "$(PYTHON_VERSION)" | $(REQUIREMENTS_PATH)'
     restoreKeys: |
       python | "$(Agent.OS)" | "$(PYTHON_VERSION)"
       python | "$(Agent.OS)"
@@ -62,7 +62,7 @@ steps:
     python -m venv $(Pipeline.Workspace)/venv
     source $(Pipeline.Workspace)/venv/bin/activate
     python -m pip install --upgrade pip
-    pip install -r "$(Build.SourcesDirectory)/$(REQUIREMENTS_PATH)"
+    pip install -r "$(REQUIREMENTS_PATH)"
   displayName: 'Setup Python venv'
   condition: ne(variables['CacheRestored'], 'true')
 
@@ -79,14 +79,14 @@ steps:
 # Run Python script to retrieve SonarCloud issues
 - script: |
     source $(Pipeline.Workspace)/venv/bin/activate
-    python '$(Build.SourcesDirectory)/sonarqube-project/sonar_issues/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
+    python '/home/vsts/work/1/s/SonarQube Issue Fixer/sonarqube-project/sonar_issues/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
   displayName: 'Retrieve SonarCloud Issues'
-  workingDirectory: '$(Build.SourcesDirectory)/sonarqube-project'
+  workingDirectory: '/home/vsts/work/1/s/SonarQube Issue Fixer/sonarqube-project'
 
 # Publish issues as an artifact
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Build.SourcesDirectory)/sonarqube-project/issues.json'
+    targetPath: '/home/vsts/work/1/s/SonarQube Issue Fixer/sonarqube-project/issues.json'
     artifactName: 'SonarCloudIssues'
     publishLocation: 'pipeline'
 
@@ -95,7 +95,7 @@ steps:
     source $(Pipeline.Workspace)/venv/bin/activate
     python backend/services/sonar_qube_fixer_agent/src/fixer_agent.py 'issues.json'
   displayName: 'Run Fixer Agent Script'
-  workingDirectory: '$(Build.SourcesDirectory)/sonarqube-project'
+  workingDirectory: '/home/vsts/work/1/s/SonarQube Issue Fixer/sonarqube-project'
   env:
     CURRENT_BRANCH: $(CURRENT_BRANCH)
     GITHUB_ACCESS_TOKEN: $(GITHUB_ACCESS_TOKEN)
