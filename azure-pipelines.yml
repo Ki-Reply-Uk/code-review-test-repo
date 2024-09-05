@@ -28,22 +28,23 @@ resources:
 steps:
 - checkout: self
 
-- task: SonarCloudPrepare@2
-  inputs:
-    SonarCloud: '$(sonarCloudEndpointName)'
-    organization: '$(SONAR_ORGANISATION)'
-    scannerMode: 'CLI'
-    configMode: 'manual'
-    cliProjectKey: '$(SONAR_PROJECT_KEY)'
-    cliProjectName: '$(sonarCloudProjectName)'
-    cliProjectVersion: '1.0'
-    cliSources: '.'
+# - task: SonarCloudPrepare@2
+#   inputs:
+#     SonarCloud: '$(sonarCloudEndpointName)'
+#     organization: '$(SONAR_ORGANISATION)'
+#     scannerMode: 'CLI'
+#     configMode: 'manual'
+#     cliProjectKey: '$(SONAR_PROJECT_KEY)'
+#     cliProjectName: '$(sonarCloudProjectName)'
+#     cliProjectVersion: '1.0'
+#     cliSources: '.'
 
-- task: SonarCloudAnalyze@2
+# - task: SonarCloudAnalyze@2
 
-- task: SonarCloudPublish@2
-  inputs:
-    pollingTimeoutSec: '300'
+# - task: SonarCloudPublish@2
+#   inputs:
+#     pollingTimeoutSec: '300'
+
 - checkout: sonarqube-issue-fixer
 
 - task: UsePythonVersion@0
@@ -54,7 +55,7 @@ steps:
 # Run Python script to retrieve SonarCloud issues
 - script: |
     source $(Pipeline.Workspace)/venv/bin/activate
-    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/sonar_issues/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
+    python '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project/backend/services/sonar_issues/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
   displayName: 'Retrieve SonarCloud Issues'
   workingDirectory: '$(Build.SourcesDirectory)/SonarQube Issue Fixer/sonarqube-project'
 
