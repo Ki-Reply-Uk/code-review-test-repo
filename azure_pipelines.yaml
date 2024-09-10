@@ -1,1 +1,69 @@
-hello
+trigger:
+  branches:
+    include:
+      - main
+      
+pr:
+  branches:
+    exclude:
+      - '*'
+
+pool:
+  vmImage: 'ubuntu-latest'
+variables:
+- name: PYTHON_VERSION
+  value: '3.10'
+resources:
+  repositories:
+    - repository: self
+    - repository: azure-repo
+      type: git
+      name: "TestProj/TestProj-repo"
+
+steps:
+- checkout: self
+
+- task: SonarCloudPrepare@2
+  inputs:
+    SonarCloud: '$(SONAR_CLOUD_ENDPOINT_NAME)'
+    organization: '$(SONAR_ORGANISATION)'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '$(SONAR_PROJECT_KEY)'
+    cliProjectName: '$(SONAR_CLOUD_PROJECT_NAME)'
+    cliProjectVersion: '1.0'
+    cliSources: '.'
+
+- task: SonarCloudAnalyze@2
+
+- task: SonarCloudPublish@2
+  inputs:
+    pollingTimeoutSec: '300'
+
+- checkout: azure-repo
+
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(PYTHON_VERSION)'
+    addToPath: true
+    
+# Install Python dependencies
+- script: |
+    python -m pip install --upgrade pip
+    pip install -r '$(Build.SourcesDirectory)/TestProj-repo/requirements.txt'
+  displayName: 'Install Python Dependencies'
+  workingDirectory: $(System.DefaultWorkingDirectory)
+
+# Run Python script to retrieve SonarCloud issues
+- script: |
+    source $(Pipeline.Workspace)/venv/bin/activate
+    python '$(Build.SourcesDirectory)/TestProj-repo/fetch_sonarcloud_issues.py' $(SONAR_ORGANISATION) $(SONAR_PROJECT_KEY) $(SONAR_TOKEN)
+  displayName: 'Retrieve SonarCloud Issues'
+  workingDirectory: '$(Build.SourcesDirectory)/TestProj-repo'
+
+# Publish issues as an artifact
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.SourcesDirectory)/TestProj-repo/issues.json'
+    artifactName: 'SonarCloudIssues'
+    publishLocation: 'pipeline'
