@@ -70,7 +70,6 @@ def play_once():
     # Convert the numeric choice to a letter: 0->a, 1->b, etc.
     choice=chr(ord('a')+choice)
 
-    #choice=raw_input("What should I choose?")          # (for debugging)
 
     # We'll track how many possibilities the user still has available.
     # Start with all of the letters.
