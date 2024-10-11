@@ -64,42 +64,32 @@ questions={'curves':CURVES, 'looseends':LOOSE_ENDS,
 
 # Play a single game
 
+def get_user_input():
+    try:
+        query = raw_input('Next? ')
+        query = string.lower(query)
+        query = ''.join(filter(lambda x: x in string.lowercase, query))
+        query = string.strip(query)
+        return query
+    except (EOFError, KeyboardInterrupt):
+        print '\nOK; give up if you like.'
+        return None
+
+def process_query(query, possibilities, asked, letter_stats, choice):
+    if query is None:
+        return
+    handle_query(query, possibilities, asked, letter_stats, choice)
+
 def play_once():
-    # Choose a random number between 0 and 26, inclusive.
-    choice=26*random.random()
-    # Convert the numeric choice to a letter: 0->a, 1->b, etc.
-    choice=chr(ord('a')+choice)
-
-    #choice=raw_input("What should I choose?")          # (for debugging)
-
-    # We'll track how many possibilities the user still has available.
-    # Start with all of the letters.
-    possibilities=string.lower("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-    # We'll also track which questions have been asked, and chide the
-    # user when he repeats a question.
-    asked=[]
-
-    # Loop forever; the play_once() function will exit by hitting a
-    # 'return' statement inside the loop.
-    while (1):
-        try:
-            #print possibilities                                            # (for debugging)
-
-            # Get input from the user
-            query=raw_input('Next? ')
-            # Convert the input to lowercase
-            query=string.lower(query)
-            # Remove all non-letter characters
-            query=''.join(filter(lambda x: x in string.lowercase, query))
-            # Remove whitespace
-            query=string.strip(query)
-
-        except (EOFError, KeyboardInterrupt):
-            # End-Of-File : the user
-            print '\nOK; give up if you like.'
+    choice = 26 * random.random()
+    choice = chr(ord('a') + choice)
+    possibilities = string.lower("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    asked = []
+    while True:
+        query = get_user_input()
+        if query is None:
             return
-
-        handle_query(query, possibilities, asked, letter_stats, choice)
+        process_query(query, possibilities, asked, letter_stats, choice)
 
 # Print the instructions
 print """This is a guessing game about capital letters.
