@@ -58,7 +58,7 @@ def get(filename):
         shortlen = s1 + (s2 << 32)
         flags    = f1 + (f2 << 32)
     else:
-        numstr, longlen, shortlen, flags = struct.unpack('4l', data)
+        numstr, shortlen, flags = struct.unpack('3l', data)
 
     delimiter = datfile.read(1)
     datfile.read(3)                     # Throw away padding bytes
