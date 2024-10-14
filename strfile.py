@@ -94,8 +94,7 @@ write_long(0)                           # Flags; we'll set them to zero
 output.write(delimiter + '\0'*(LONG_SIZE-1))
 output.close()
 
-result = '''"%s.dat" created
+print '''"%s.dat" created
 There were %i strings
 Longest string: %i bytes
 Shortest string: %i bytes''' % (filename, numstr, longest, shortest)
-print(result)
